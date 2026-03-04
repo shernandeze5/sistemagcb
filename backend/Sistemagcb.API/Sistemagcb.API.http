@@ -1,6 +1,0 @@
-@Sistemagcb.API_HostAddress = http://localhost:5095
-
-GET {{Sistemagcb.API_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
