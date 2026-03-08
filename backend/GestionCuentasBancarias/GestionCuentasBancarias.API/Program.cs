@@ -1,4 +1,8 @@
 using GestionCuentasBancarias.Data.Context;
+using GestionCuentasBancarias.Business.Services;
+using GestionCuentasBancarias.Data.Repositories;
+using GestionCuentasBancarias.Domain.Interfaces.Repositories;
+using GestionCuentasBancarias.Domain.Interfaces.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,9 +19,10 @@ builder.Services.AddScoped<OracleConnectionFactory>(sp =>
     return new OracleConnectionFactory(connectionString);
 });
 
+builder.Services.AddScoped<ITipoMovimientoRepository, TipoMovimientoRepository>();
+builder.Services.AddScoped<ITipoMovimientoService, TipoMovimientoService>();
 
 var app = builder.Build();
-
 
 
 // Configure the HTTP request pipeline.
