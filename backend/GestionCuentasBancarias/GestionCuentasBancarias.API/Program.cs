@@ -25,6 +25,9 @@ builder.Services.AddScoped<ITipoMovimientoService, TipoMovimientoService>();
 builder.Services.AddScoped<IMedioMovimientoRepository, MedioMovimientoRepository>();
 builder.Services.AddScoped<IMedioMovimientoService, MedioMovimientoService>();
 
+builder.Services.AddScoped<IEstadoMovimientoRepository, EstadoMovimientoRepository>();
+builder.Services.AddScoped<IEstadoMovimientoService, EstadoMovimientoService>();
+
 var app = builder.Build();
 
 
