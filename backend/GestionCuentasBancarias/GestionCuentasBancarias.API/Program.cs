@@ -19,6 +19,9 @@ builder.Services.AddScoped<OracleConnectionFactory>(sp =>
     return new OracleConnectionFactory(connectionString);
 });
 
+builder.Services.AddScoped<IMovimientoRepository, MovimientoRepository>();
+builder.Services.AddScoped<IMovimientoService, MovimientoService>();
+
 builder.Services.AddScoped<ITipoMovimientoRepository, TipoMovimientoRepository>();
 builder.Services.AddScoped<ITipoMovimientoService, TipoMovimientoService>();
 
@@ -27,6 +30,7 @@ builder.Services.AddScoped<IMedioMovimientoService, MedioMovimientoService>();
 
 builder.Services.AddScoped<IEstadoMovimientoRepository, EstadoMovimientoRepository>();
 builder.Services.AddScoped<IEstadoMovimientoService, EstadoMovimientoService>();
+
 
 var app = builder.Build();
 
