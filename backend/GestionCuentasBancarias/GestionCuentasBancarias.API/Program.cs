@@ -21,6 +21,8 @@ builder.Services.AddScoped<OracleConnectionFactory>(sp =>
 
 builder.Services.AddScoped<ITipoMovimientoRepository, TipoMovimientoRepository>();
 builder.Services.AddScoped<ITipoMovimientoService, TipoMovimientoService>();
+builder.Services.AddScoped<IBancoRepository, BancoRepository>();
+builder.Services.AddScoped<IBancoService, BancoService>();
 
 var app = builder.Build();
 
