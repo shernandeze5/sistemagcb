@@ -26,6 +26,8 @@ builder.Services.AddScoped<ITipoMovimientoRepository, TipoMovimientoRepository>(
 builder.Services.AddScoped<ITipoMovimientoService, TipoMovimientoService>();
 builder.Services.AddScoped<IBancoRepository, BancoRepository>();
 builder.Services.AddScoped<IBancoService, BancoService>();
+builder.Services.AddScoped<ITipoCuentaRepository, TipoCuentaRespository>();
+builder.Services.AddScoped<ITipoCuentaService, TipoCuentaService>();
 
 builder.Services.AddScoped<IMedioMovimientoRepository, MedioMovimientoRepository>();
 builder.Services.AddScoped<IMedioMovimientoService, MedioMovimientoService>();
