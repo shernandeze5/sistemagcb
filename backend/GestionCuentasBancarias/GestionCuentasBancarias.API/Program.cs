@@ -15,9 +15,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<OracleConnectionFactory>(sp =>
 {
     var configuration = sp.GetRequiredService<IConfiguration>();
-    var connectionString = configuration.GetConnectionString("OracleConnection");
-     throw new InvalidOperationException("No se encontró la cadena de conexión OracleConnection.");
-
+    var connectionString = configuration.GetConnectionString("OracleConnection")
+    ?? throw new InvalidOperationException("No se encontró la cadena de conexión OracleConnection.");
 
     return new OracleConnectionFactory(connectionString);
 });
@@ -47,6 +46,9 @@ builder.Services.AddScoped<IEstadoMovimientoService, EstadoMovimientoService>();
 builder.Services.AddScoped<ITipoMonedaRepository, TipoMonedaRepository>();
 builder.Services.AddScoped<ITipoMonedaService, TipoMonedaService>();
 
+builder.Services.AddScoped<ITipoDireccionRepository, TipoDireccionRepository>();
+builder.Services.AddScoped<ITipoDireccionService, TipoDireccionService>();
+
 
 var app = builder.Build();
 
@@ -58,7 +60,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
