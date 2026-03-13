@@ -30,6 +30,7 @@ builder.Services.AddScoped<IBancoService, BancoService>();
 
 builder.Services.AddScoped<ITipoCuentaRepository, TipoCuentaRespository>();
 builder.Services.AddScoped<ITipoCuentaService, TipoCuentaService>();
+
 builder.Services.AddScoped<ITipoPersonaRepository, TipoPersonaRepository>();
 builder.Services.AddScoped<ITipoPersonaService, TipoPersonaService >();
 
@@ -41,6 +42,9 @@ builder.Services.AddScoped<IEstadoMovimientoService, EstadoMovimientoService>();
 
 builder.Services.AddScoped<ITipoMonedaRepository, TipoMonedaRepository>();
 builder.Services.AddScoped<ITipoMonedaService, TipoMonedaService>();
+
+builder.Services.AddScoped<IEstadoCuentaRepository, EstadoCuentaRepository>();
+builder.Services.AddScoped<IEstadoCuentaService, EstadoCuentaService>();
 
 
 var app = builder.Build();
