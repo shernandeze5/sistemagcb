@@ -28,6 +28,8 @@ builder.Services.AddScoped<IBancoRepository, BancoRepository>();
 builder.Services.AddScoped<IBancoService, BancoService>();
 builder.Services.AddScoped<ITipoCuentaRepository, TipoCuentaRespository>();
 builder.Services.AddScoped<ITipoCuentaService, TipoCuentaService>();
+builder.Services.AddScoped<ITipoPersonaRepository, TipoPersonaRepository>();
+builder.Services.AddScoped<ITipoPersonaService, TipoPersonaService >();
 
 builder.Services.AddScoped<IMedioMovimientoRepository, MedioMovimientoRepository>();
 builder.Services.AddScoped<IMedioMovimientoService, MedioMovimientoService>();
