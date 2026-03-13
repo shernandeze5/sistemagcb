@@ -16,6 +16,9 @@ builder.Services.AddScoped<OracleConnectionFactory>(sp =>
 {
     var configuration = sp.GetRequiredService<IConfiguration>();
     var connectionString = configuration.GetConnectionString("OracleConnection");
+     throw new InvalidOperationException("No se encontró la cadena de conexión OracleConnection.");
+
+
     return new OracleConnectionFactory(connectionString);
 });
 
@@ -27,6 +30,8 @@ builder.Services.AddScoped<ITipoCuentaRepository, TipoCuentaRespository>();
 builder.Services.AddScoped<ITipoCuentaService, TipoCuentaService>();
 builder.Services.AddScoped<ITipoPersonaRepository, TipoPersonaRepository>();
 builder.Services.AddScoped<ITipoPersonaService, TipoPersonaService >();
+builder.Services.AddScoped<ITipoTelefonoRepository, TipoTelefonoRepository>();
+builder.Services.AddScoped<ITipoTelefonoService, TipoTelefonoService>();
 
 var app = builder.Build();
 
@@ -38,7 +43,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
