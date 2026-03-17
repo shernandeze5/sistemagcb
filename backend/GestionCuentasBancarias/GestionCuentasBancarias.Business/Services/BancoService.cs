@@ -42,5 +42,10 @@ namespace GestionCuentasBancarias.Business.Services
         {
             return repository.EliminarBanco(id);
         }
+
+        public Task<bool> ReactivarBanco(int id)
+        {
+            return repository.ReactivarBanco(id);
+        }
     }
 }

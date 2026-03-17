@@ -14,6 +14,7 @@ namespace GestionCuentasBancarias.Domain.Interfaces.Services
         Task CrearBanco(CreateBancoDTO dto);
         Task<bool> ActualizarBanco(int id, UpdataBancoDTO dto);
         Task<bool> EliminarBanco(int id);
+        Task<bool> ReactivarBanco(int id);
 
     }
 }

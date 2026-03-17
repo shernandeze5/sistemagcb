@@ -30,7 +30,6 @@ namespace GestionCuentasBancarias.Data.Repositories
                            BAN_Estado,
                            BAN_Fecha_Creacion
                            FROM GCB_BANCO
-                           WHERE BAN_Estado = 'A'
                            ORDER BY BAN_Nombre";
 
             var result = await connection.QueryAsync<ResponseBancoDTO>(sql);
@@ -66,7 +65,7 @@ namespace GestionCuentasBancarias.Data.Repositories
             {
                 Nombre = dto.BAN_Nombre,
                 Swift = dto.BAN_Codigo_Swift
-            });
+            }); 
         }
 
         public async Task<bool> ActualizarBanco(int id, UpdataBancoDTO dto)
@@ -98,6 +97,14 @@ namespace GestionCuentasBancarias.Data.Repositories
 
             var rows = await connection.ExecuteAsync(sql, new { Id = id });
 
+            return rows > 0;
+        }
+
+        public async Task<bool> ReactivarBanco(int id)
+        {
+            using var connection = new OracleConnection(connectionString);
+            string sql = @"UPDATE GCB_BANCO SET BAN_Estado = 'A' WHERE BAN_Banco = :Id";
+            var rows = await connection.ExecuteAsync(sql, new { Id = id });
             return rows > 0;
         }
     }
