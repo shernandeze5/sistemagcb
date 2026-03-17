@@ -31,7 +31,7 @@ namespace GestionCuentasBancarias.Data.Repositories
                     TIP_ESTADO AS TIP_Estado,
                     TIP_FECHA_CREACION AS TIP_Fecha_Creacion
                 FROM GCB_TIPO_PERSONA
-                WHERE TIP_ESTADO = 1
+                WHERE TIP_ESTADO = 'A'
                 ORDER BY TIP_TIPO_PERSONA";
 
             return await db.QueryAsync<TipoPersona>(sql);
@@ -90,7 +90,7 @@ namespace GestionCuentasBancarias.Data.Repositories
 
             string sql = @"
                 UPDATE GCB_TIPO_PERSONA
-                SET TIP_ESTADO = 0
+                SET TIP_ESTADO = 'I'
                 WHERE TIP_TIPO_PERSONA = :Id";
 
             int filas = await db.ExecuteAsync(sql, new { Id = id });
