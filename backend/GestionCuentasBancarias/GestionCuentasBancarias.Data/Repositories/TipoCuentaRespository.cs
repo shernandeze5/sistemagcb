@@ -30,7 +30,6 @@ namespace GestionCuentasBancarias.Data.Repositories
                            TCU_Estado,
                            TCU_Fecha_Creacion
                            FROM GCB_TIPO_CUENTA
-                           WHERE TCU_Estado = 'A'
                            ORDER BY TCU_Descripcion";
 
             return await connection.QueryAsync<ResponseTipoCuentaDTO>(sql);
@@ -93,6 +92,14 @@ namespace GestionCuentasBancarias.Data.Repositories
 
             var rows = await connection.ExecuteAsync(sql, new { Id = id });
 
+            return rows > 0;
+        }
+
+        public async Task<bool> ReactivarTipoCuenta(int id)
+        {
+            using var connection = new OracleConnection(connectionString);
+            string sql = @"UPDATE GCB_TIPO_CUENTA SET TCU_Estado = 'A' WHERE TCU_Tipo_Cuenta = :Id";
+            var rows = await connection.ExecuteAsync(sql, new { Id = id });
             return rows > 0;
         }
     }

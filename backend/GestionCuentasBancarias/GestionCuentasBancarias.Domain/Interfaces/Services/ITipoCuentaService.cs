@@ -15,5 +15,7 @@ namespace GestionCuentasBancarias.Domain.Interfaces.Services
         Task<int> CrearTipoCuenta(CreateTipoCuentaDTO dto);
         Task<bool> ActualizarTipoCuenta(int id, UpdateTipoCuentaDTO dto);
         Task<bool> EliminarTipoCuenta(int id);
+        Task<bool> ReactivarTipoCuenta(int id);
+
     }
 }

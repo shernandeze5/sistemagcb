@@ -55,5 +55,13 @@ namespace GestionCuentasBancarias.API.Controllers
             return Ok();
         }
 
+        [HttpPatch("{id}/reactivar")]
+        public async Task<IActionResult> ReactivarTipoCuenta(int id)
+        {
+            var reactivado = await service.ReactivarTipoCuenta(id);
+            if (!reactivado) return NotFound();
+            return Ok();
+        }
+
     }
 }
