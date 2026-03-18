@@ -29,7 +29,6 @@ namespace GestionCuentasBancarias.Data.Repositories
                            ESC_Estado,
                            ESC_Fecha_Creacion
                            FROM GCB_ESTADO_CUENTA
-                           WHERE ESC_Estado = 'A'
                            ORDER BY ESC_Descripcion";
 
             return await connection.QueryAsync<ResponseEstadoCuentaDTO>(sql);
@@ -92,6 +91,14 @@ namespace GestionCuentasBancarias.Data.Repositories
 
             var rows = await connection.ExecuteAsync(sql, new { Id = id });
 
+            return rows > 0;
+        }
+
+        public async Task<bool> ReactivarEstadoCuenta(int id)
+        {
+            using var connection = new OracleConnection(connectionString);
+            string sql = @"UPDATE GCB_ESTADO_CUENTA SET ESC_Estado = 'A' WHERE ESC_Estado_Cuenta = :Id";
+            var rows = await connection.ExecuteAsync(sql, new { Id = id });
             return rows > 0;
         }
     }

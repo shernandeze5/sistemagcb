@@ -53,5 +53,13 @@ namespace GestionCuentasBancarias.API.Controllers
             await service.EliminarEstadoCuenta(id);
             return Ok();
         }
+
+        [HttpPatch("{id}/reactivar")]
+        public async Task<IActionResult> ReactivarEstadoCuenta(int id)
+        {
+            var reactivado = await service.ReactivarEstadoCuenta(id);
+            if (!reactivado) return NotFound();
+            return Ok();
+        }
     }
 }

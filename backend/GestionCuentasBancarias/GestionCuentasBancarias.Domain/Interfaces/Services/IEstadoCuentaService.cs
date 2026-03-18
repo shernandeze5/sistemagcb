@@ -14,5 +14,6 @@ namespace GestionCuentasBancarias.Domain.Interfaces.Services
         Task<int> CrearEstadoCuenta(CreateEstadoCuentaDTO dto);
         Task<bool> ActualizarEstadoCuenta(int id, UpdateEstadoCuentaDTO dto);
         Task<bool> EliminarEstadoCuenta(int id);
+        Task<bool> ReactivarEstadoCuenta(int id);
     }
 }
