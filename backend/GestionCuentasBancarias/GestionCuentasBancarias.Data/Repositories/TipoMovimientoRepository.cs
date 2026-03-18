@@ -30,7 +30,7 @@ namespace GestionCuentasBancarias.Data.Repositories
                     TIM_Estado,
                     TIM_Fecha_Creacion
                 FROM GCB_TIPO_MOVIMIENTO
-                WHERE TIM_Estado = 1
+                WHERE TIM_Estado = 'A'
                 ORDER BY TIM_Tipo_Movimiento";
 
             return await connection.QueryAsync<TipoMovimiento>(sql);
@@ -59,14 +59,12 @@ namespace GestionCuentasBancarias.Data.Repositories
             var sql = @"
                 INSERT INTO GCB_TIPO_MOVIMIENTO
                 (
-                    TIM_Tipo_Movimiento,
                     TIM_Descripcion,
                     TIM_Estado,
                     TIM_Fecha_Creacion
                 )
                 VALUES
                 (
-                    SEQ_GCB_TIPO_MOVIMIENTO.NEXTVAL,
                     :TIM_Descripcion,
                     :TIM_Estado,
                     :TIM_Fecha_Creacion
@@ -109,7 +107,7 @@ namespace GestionCuentasBancarias.Data.Repositories
 
             var sql = @"
                 UPDATE GCB_TIPO_MOVIMIENTO
-                SET TIM_Estado = 0
+                SET TIM_Estado = 'I'
                 WHERE TIM_Tipo_Movimiento = :Id";
 
             var resultado = await connection.ExecuteAsync(sql, new { Id = id });

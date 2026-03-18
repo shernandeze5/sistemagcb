@@ -12,7 +12,7 @@ namespace GestionCuentasBancarias.Domain.Entities
 
         public string MEM_Descripcion { get; set; } = string.Empty;
 
-        public int MEM_Estado { get; set; }
+        public string MEM_Estado { get; set; } = string.Empty;
 
         public DateTime MEM_Fecha_Creacion { get; set; }
     }

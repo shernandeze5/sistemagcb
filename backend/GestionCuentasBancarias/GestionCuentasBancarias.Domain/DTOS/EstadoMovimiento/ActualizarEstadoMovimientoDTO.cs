@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace GestionCuentasBancarias.Domain.DTOS
 {
-    public class ActualizarTipoMovimientoDTO
+    public class ActualizarEstadoMovimientoDTO
     {
-        public string TIM_Descripcion { get; set; } = string.Empty;
-        public int TIM_Estado { get; set; }
+        public string ESM_Descripcion { get; set; } = string.Empty;
+
+        public string ESM_Estado { get; set; } = string.Empty;
     }
 }

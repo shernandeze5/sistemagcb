@@ -30,7 +30,7 @@ namespace GestionCuentasBancarias.Data.Repositories
                     ESM_Estado,
                     ESM_Fecha_Creacion
                 FROM GCB_ESTADO_MOVIMIENTO
-                WHERE ESM_Estado = 1
+                WHERE ESM_Estado = 'A'
                 ORDER BY ESM_Estado_Movimiento";
 
             return await connection.QueryAsync<EstadoMovimiento>(sql);
@@ -59,14 +59,12 @@ namespace GestionCuentasBancarias.Data.Repositories
             var sql = @"
                 INSERT INTO GCB_ESTADO_MOVIMIENTO
                 (
-                    ESM_Estado_Movimiento,
                     ESM_Descripcion,
                     ESM_Estado,
                     ESM_Fecha_Creacion
                 )
                 VALUES
                 (
-                    SEQ_GCB_ESTADO_MOVIMIENTO.NEXTVAL,
                     :ESM_Descripcion,
                     :ESM_Estado,
                     :ESM_Fecha_Creacion
@@ -109,7 +107,7 @@ namespace GestionCuentasBancarias.Data.Repositories
 
             var sql = @"
                 UPDATE GCB_ESTADO_MOVIMIENTO
-                SET ESM_Estado = 0
+                SET ESM_Estado = 'I'
                 WHERE ESM_Estado_Movimiento = :Id";
 
             var resultado = await connection.ExecuteAsync(sql, new { Id = id });

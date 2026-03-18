@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GestionCuentasBancarias.Domain.DTOS;
+using GestionCuentasBancarias.Domain.DTOS.MedioMovimiento;
 
 namespace GestionCuentasBancarias.Domain.Interfaces.Services
 {

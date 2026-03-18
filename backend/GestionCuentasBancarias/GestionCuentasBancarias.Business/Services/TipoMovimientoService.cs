@@ -54,7 +54,7 @@ namespace GestionCuentasBancarias.Business.Services
             var entidad = new TipoMovimiento
             {
                 TIM_Descripcion = dto.TIM_Descripcion,
-                TIM_Estado = 1,
+                TIM_Estado = "A",
                 TIM_Fecha_Creacion = DateTime.Now
             };
 
