@@ -53,7 +53,7 @@ namespace GestionCuentasBancarias.Business.Services
             var entidad = new EstadoMovimiento
             {
                 ESM_Descripcion = dto.ESM_Descripcion,
-                ESM_Estado = 1,
+                ESM_Estado = "A",
                 ESM_Fecha_Creacion = DateTime.Now
             };
 

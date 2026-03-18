@@ -12,7 +12,7 @@ namespace GestionCuentasBancarias.Domain.DTOS
 
         public string ESM_Descripcion { get; set; } = string.Empty;
 
-        public int ESM_Estado { get; set; }
+        public string ESM_Estado { get; set; } = string.Empty;
 
         public DateTime ESM_Fecha_Creacion { get; set; }
     }

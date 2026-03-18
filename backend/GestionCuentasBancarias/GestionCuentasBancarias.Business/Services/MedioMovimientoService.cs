@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GestionCuentasBancarias.Domain.DTOS;
+using GestionCuentasBancarias.Domain.DTOS.MedioMovimiento;
 using GestionCuentasBancarias.Domain.Entities;
 using GestionCuentasBancarias.Domain.Interfaces.Repositories;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
@@ -53,7 +54,7 @@ namespace GestionCuentasBancarias.Business.Services
             var entidad = new MedioMovimiento
             {
                 MEM_Descripcion = dto.MEM_Descripcion,
-                MEM_Estado = 1,
+                MEM_Estado = "A",
                 MEM_Fecha_Creacion = DateTime.Now
             };
 

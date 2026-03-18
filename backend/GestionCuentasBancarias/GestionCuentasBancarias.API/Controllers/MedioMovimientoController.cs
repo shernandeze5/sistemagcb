@@ -1,4 +1,5 @@
 ﻿using GestionCuentasBancarias.Domain.DTOS;
+using GestionCuentasBancarias.Domain.DTOS.MedioMovimiento;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 

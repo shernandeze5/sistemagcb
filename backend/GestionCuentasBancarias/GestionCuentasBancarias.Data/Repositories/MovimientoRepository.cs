@@ -72,7 +72,6 @@ namespace GestionCuentasBancarias.Data.Repositories
             var sql = @"
                 INSERT INTO GCB_MOVIMIENTO
                 (
-                    MOV_Movimiento,
                     CUB_Cuenta,
                     PER_Persona,
                     TIM_Tipo_Movimiento,
@@ -86,7 +85,6 @@ namespace GestionCuentasBancarias.Data.Repositories
                 )
                 VALUES
                 (
-                    SEQ_GCB_MOVIMIENTO.NEXTVAL,
                     :CUB_Cuenta,
                     :PER_Persona,
                     :TIM_Tipo_Movimiento,
