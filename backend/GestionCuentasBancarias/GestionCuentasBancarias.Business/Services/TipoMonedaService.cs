@@ -42,5 +42,10 @@ namespace GestionCuentasBancarias.Business.Services
         {
             return repository.EliminarTipoMoneda(id);
         }
+
+        public Task<bool> ReactivarTipoMoneda(int id)
+        {
+            return repository.ReactivarTipoMoneda(id);
+        }
     }
 }

@@ -54,5 +54,13 @@ namespace GestionCuentasBancarias.API.Controllers
             return Ok();
         }
 
+        [HttpPatch("{id}/reactivar")]
+        public async Task<IActionResult> ReactivarTipoMoneda(int id)
+        {
+            var reactivado = await service.ReactivarTipoMoneda(id);
+            if (!reactivado) return NotFound();
+            return Ok();
+        }
+
     }
 }

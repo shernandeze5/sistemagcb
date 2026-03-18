@@ -15,5 +15,6 @@ namespace GestionCuentasBancarias.Domain.Interfaces.Repositories
         Task<int> CrearTipoMoneda(CreateTipoMonedaDTO dto);
         Task<bool> ActualizarTipoMoneda(int id, UpdateTipoMonedaDTO dto);
         Task<bool> EliminarTipoMoneda(int id);
+        Task<bool> ReactivarTipoMoneda(int id);
     }
 }

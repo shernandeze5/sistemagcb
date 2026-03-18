@@ -9,5 +9,6 @@ namespace GestionCuentasBancarias.Domain.DTOS.TipoMoneda
     public class CreateTipoMonedaDTO
     {
         public string TMO_Descripcion { get; set; } = string.Empty;
+        public string TMO_Simbolo { get; set; } = string.Empty;
     }
 }
