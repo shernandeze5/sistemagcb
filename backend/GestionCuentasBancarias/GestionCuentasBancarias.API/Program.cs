@@ -22,7 +22,7 @@ builder.Services.AddScoped<OracleConnectionFactory>(sp =>
 {
     var configuration = sp.GetRequiredService<IConfiguration>();
     var connectionString = configuration.GetConnectionString("OracleConnection")
-    ?? throw new InvalidOperationException("No se encontró la cadena de conexión OracleConnection.");
+    ?? throw new InvalidOperationException("No se encontrï¿½ la cadena de conexiï¿½n OracleConnection.");
 
     return new OracleConnectionFactory(connectionString);
 });
@@ -58,6 +58,15 @@ builder.Services.AddScoped<ITipoDireccionService, TipoDireccionService>();
 
 builder.Services.AddScoped<IEstadoCuentaRepository, EstadoCuentaRepository>();
 builder.Services.AddScoped<IEstadoCuentaService, EstadoCuentaService>();
+
+builder.Services.AddScoped<IEstadoChequeRepository, EstadoChequeRepository>();
+builder.Services.AddScoped<IEstadoChequeService, EstadoChequeService>();
+
+builder.Services.AddScoped<IEstadoConciliacionRepository, EstadoConciliacionRepository>();
+builder.Services.AddScoped<IEstadoConciliacionService, EstadoConciliacionService>();
+
+builder.Services.AddScoped<IEstadoDetalleConciliacionRepository, EstadoDetalleConciliacionRepository>();
+builder.Services.AddScoped<IEstadoDetalleConciliacionService, EstadoDetalleConciliacionService>();
 
 
 var app = builder.Build();
