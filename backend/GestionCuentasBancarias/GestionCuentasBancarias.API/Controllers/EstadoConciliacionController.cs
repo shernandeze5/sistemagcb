@@ -1,4 +1,3 @@
-using GestionCuentasBancarias.Business.Services;
 using GestionCuentasBancarias.Domain.DTOS.Conciliacion;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -6,71 +5,61 @@ using Microsoft.AspNetCore.Mvc;
 namespace GestionCuentasBancarias.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/estados-conciliacion")]
     public class EstadoConciliacionController : ControllerBase
     {
-        private readonly IEstadoConciliacionService _service;
+        private readonly IEstadoConciliacionService service;
 
         public EstadoConciliacionController(IEstadoConciliacionService service)
         {
-            _service = service;
+            this.service = service;
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObtenerTodos()
+        public async Task<IActionResult> ObtenerEstadosConciliacion()
         {
-            var data = await _service.ObtenerTodosAsync();
-            return Ok(data);
+            var estados = await service.ObtenerEstadosConciliacion();
+            return Ok(estados);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> ObtenerPorId(int id)
+        public async Task<IActionResult> ObtenerEstadoConciliacion(int id)
         {
-            var data = await _service.ObtenerPorIdAsync(id);
+            var estado = await service.ObtenerEstadoConciliacionPorId(id);
 
-            if (data == null)
-                return NotFound(new { mensaje = "Estado Conciliación no encontrado." });
+            if (estado == null)
+                return NotFound();
 
-            return Ok(data);
+            return Ok(estado);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Crear([FromBody] CrearEstadoConciliacionDTO dto)
+        public async Task<IActionResult> CrearEstadoConciliacion([FromBody] CreateEstadoConciliacionDTO dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.ECO_Descripcion))
-                return BadRequest(new { mensaje = "La descripción no puede quedar vacia." });
-
-            var resultado = await _service.CrearAsync(dto);
-
-            if (!resultado)
-                return BadRequest(new { mensaje = "No se pudo crear el nuevo Estado Conciliación." });
-
-            return Ok(new { mensaje = "Estado Conciliación creado correctamente." });
+            await service.CrearEstadoConciliacion(dto);
+            return Ok();
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Actualizar(int id, [FromBody] ActualizarEstadoConciliacionDTO dto)
+        public async Task<IActionResult> ActualizarEstadoConciliacion(int id, [FromBody] UpdateEstadoConciliacionDTO dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.ECO_Descripcion))
-                return BadRequest(new { mensaje = "La descripción no puede quedar vacia." });
-
-            var resultado = await _service.ActualizarAsync(id, dto);
-
-            if (!resultado)
-                return NotFound(new { mensaje = "No se pudo actualizar. El registro no fue encontrado." });
-
-            return Ok(new { mensaje = "Estado Conciliación actualizado correctamente." });
+            await service.ActualizarEstadoConciliacion(id, dto);
+            return Ok();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> EliminarLogico(int id)
+        public async Task<IActionResult> EliminarEstadoConcliacion(int id)
         {
-            var resultado = await _service.EliminarLogicoAsync(id);
+            await service.EliminarEstadoConciliacion(id);
+            return Ok();
+        }
 
-            if (!resultado)
-                return NotFound(new { mensaje = "No se pudo eliminar. El registro no fue encontrado." });
-
-            return Ok(new { mensaje = "Estado Conciliación eliminado correctamente." });
+        [HttpPatch("{id}/reactivar")]
+        public async Task<IActionResult> ReactivarEstadoConciliacion(int id)
+        {
+            var reactivado = await service.ReactivarEstadoConciliacion(id);
+            if (!reactivado) return NotFound();
+            return Ok();
         }
     }
 }

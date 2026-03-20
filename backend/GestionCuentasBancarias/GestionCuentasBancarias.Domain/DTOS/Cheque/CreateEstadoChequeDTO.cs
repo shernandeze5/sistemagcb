@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace GestionCuentasBancarias.Domain.DTOS.Cheque
 {
-    public class ActualizarEstadoChequeDTO
+    public class CreateEstadoChequeDTO
     {
         public string ESC_Descripcion { get; set; } = string.Empty;
-
-        public int ESC_Estado { get; set; }
     }
 }

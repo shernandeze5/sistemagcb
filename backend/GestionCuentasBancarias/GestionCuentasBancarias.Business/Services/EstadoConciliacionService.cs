@@ -1,86 +1,51 @@
+using GestionCuentasBancarias.Domain.DTOS.Conciliacion;
+using GestionCuentasBancarias.Domain.Interfaces.Repositories;
+using GestionCuentasBancarias.Domain.Interfaces.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GestionCuentasBancarias.Domain.DTOS.Conciliacion;
-using GestionCuentasBancarias.Domain.Entities;
-using GestionCuentasBancarias.Domain.Interfaces.Repositories;
-using GestionCuentasBancarias.Domain.Interfaces.Services;
 
 namespace GestionCuentasBancarias.Business.Services
 {
     public class EstadoConciliacionService : IEstadoConciliacionService
     {
-        private readonly IEstadoConciliacionRepository _repository;
+        private readonly IEstadoConciliacionRepository repository;
 
         public EstadoConciliacionService(IEstadoConciliacionRepository repository)
         {
-            _repository = repository;
+            this.repository = repository;
         }
 
-        public async Task<IEnumerable<EstadoConciliacionDTO>> ObtenerTodosAsync()
+        public Task<IEnumerable<ResponseEstadoConciliacionDTO>> ObtenerEstadosConciliacion()
         {
-            var estados = await _repository.ObtenerTodosAsync();
-
-            return estados.Select(est => new EstadoConciliacionDTO
-            {
-                ECO_Estado_Conciliacion = est.ECO_Estado_Conciliacion,
-                ECO_Descripcion = est.ECO_Descripcion,
-                ECO_Estado = est.ECO_Estado,
-                ECO_Fecha_Creacion = est.ECO_Fecha_Creacion
-            });
+            return repository.ObtenerEstadosConciliacion();
         }
 
-        public async Task<EstadoConciliacionDTO?> ObtenerPorIdAsync(int id)
+        public Task<ResponseEstadoConciliacionDTO> ObtenerEstadoConciliacionPorId(int id)
         {
-            var estc = await _repository.ObtenerPorIdAsync(id);
-
-            if (estc == null)
-                return null;
-
-            return new EstadoConciliacionDTO
-            {
-                ECO_Estado_Conciliacion = estc.ECO_Estado_Conciliacion,
-                ECO_Descripcion = estc.ECO_Descripcion,
-                ECO_Estado = estc.ECO_Estado,
-                ECO_Fecha_Creacion = estc.ECO_Fecha_Creacion
-            };
+            return repository.ObtenerEstadoConciliacionPorId(id);
         }
 
-        public async Task<bool> CrearAsync(CrearEstadoConciliacionDTO dto)
+        public Task<int> CrearEstadoConciliacion(CreateEstadoConciliacionDTO dto)
         {
-            var entidad = new EstadoConciliacion
-            {
-                ECO_Descripcion = dto.ECO_Descripcion,
-                ECO_Estado = 1,
-                ECO_Fecha_Creacion = DateTime.Now
-            };
-
-            return await _repository.CrearAsync(entidad);
+            return repository.CrearEstadoConciliacion(dto);
         }
 
-        public async Task<bool> ActualizarAsync(int id, ActualizarEstadoConciliacionDTO dto)
+        public Task<bool> ActualizarEstadoConciliacion(int id, UpdateEstadoConciliacionDTO dto)
         {
-            var existente = await _repository.ObtenerPorIdAsync(id);
-
-            if (existente == null)
-                return false;
-
-            existente.ECO_Descripcion = dto.ECO_Descripcion;
-            existente.ECO_Estado = dto.ECO_Estado;
-
-            return await _repository.ActualizarAsync(existente);
+            return repository.ActualizarEstadoConciliacion(id, dto);
         }
 
-        public async Task<bool> EliminarLogicoAsync(int id)
+        public Task<bool> EliminarEstadoConciliacion(int id)
         {
-            var existente = await _repository.ObtenerPorIdAsync(id);
+            return repository.EliminarEstadoConciliacion(id);
+        }
 
-            if (existente == null)
-                return false;
-
-            return await _repository.EliminarLogicoAsync(id);
+        public Task<bool> ReactivarEstadoConciliacion(int id)
+        {
+           return repository.ReactivarEstadoConciliacion(id);
         }
     }
 }
