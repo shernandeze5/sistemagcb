@@ -18,5 +18,6 @@ namespace GestionCuentasBancarias.Domain.Interfaces.Services
         Task<bool> ActualizarAsync(int id, ActualizarEstadoMovimientoDTO dto);
 
         Task<bool> EliminarLogicoAsync(int id);
+        Task<bool> Reactivar(int id);
     }
 }

@@ -16,7 +16,7 @@ namespace GestionCuentasBancarias.Domain.Interfaces.Repositories
         Task<bool> CrearAsync(EstadoMovimiento estadoMovimiento);
 
         Task<bool> ActualizarAsync(EstadoMovimiento estadoMovimiento);
-
         Task<bool> EliminarLogicoAsync(int id);
+        Task<bool> Reactivar(int id);
     }
 }

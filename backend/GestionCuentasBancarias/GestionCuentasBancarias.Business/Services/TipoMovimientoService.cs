@@ -83,5 +83,12 @@ namespace GestionCuentasBancarias.Business.Services
 
             return await _repository.EliminarLogicoAsync(id);
         }
+
+        public async Task<bool> Reactivar(int id)
+        {
+            var existente = await _repository.ObtenerPorIdAsync(id);
+            if (existente == null) return false;
+            return await _repository.Reactivar(id);
+        }
     }
 }
