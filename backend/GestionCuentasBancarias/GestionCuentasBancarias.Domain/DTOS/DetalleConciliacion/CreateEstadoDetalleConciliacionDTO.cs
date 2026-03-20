@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GestionCuentasBancarias.Domain.DTOS.DetalleConciliacion
 {
-    public class CrearEstadoDetalleConciliacionDTO
+    public class CreateEstadoDetalleConciliacionDTO
     {
         public string EDC_Descripcion { get; set; } = string.Empty;
     }

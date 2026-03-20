@@ -1,4 +1,3 @@
-using GestionCuentasBancarias.Business.Services;
 using GestionCuentasBancarias.Domain.DTOS.DetalleConciliacion;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -6,71 +5,61 @@ using Microsoft.AspNetCore.Mvc;
 namespace GestionCuentasBancarias.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/estados-detalle-conciliacion")]
     public class EstadoDetalleConciliacionController : ControllerBase
     {
-        private readonly IEstadoDetalleConciliacionService _service;
+        private readonly IEstadoDetalleConciliacionService service;
 
         public EstadoDetalleConciliacionController(IEstadoDetalleConciliacionService service)
         {
-            _service = service;
+            this.service = service;
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObtenerTodos()
+        public async Task<IActionResult> ObtenerEstadosDetalleConciliacion()
         {
-            var data = await _service.ObtenerTodosAsync();
-            return Ok(data);
+            var estados = await service.ObtenerEstadosDetalleConciliacion();
+            return Ok(estados);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> ObtenerPorId(int id)
+        public async Task<IActionResult> ObtenerEstadoDetalleConciliacion(int id)
         {
-            var data = await _service.ObtenerPorIdAsync(id);
+            var estado = await service.ObtenerEstadoDetalleConciliacionPorId(id);
 
-            if (data == null)
-                return NotFound(new { mensaje = "Estado Detalle Conciliación no encontrado." });
+            if (estado == null)
+                return NotFound();
 
-            return Ok(data);
+            return Ok(estado);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Crear([FromBody] CrearEstadoDetalleConciliacionDTO dto)
+        public async Task<IActionResult> CrearEstadoDetalleConciliacion([FromBody] CreateEstadoDetalleConciliacionDTO dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.EDC_Descripcion))
-                return BadRequest(new { mensaje = "La descripción no puede quedar vacia." });
-
-            var resultado = await _service.CrearAsync(dto);
-
-            if (!resultado)
-                return BadRequest(new { mensaje = "No se pudo crear el nuevo Estado Detalle Conciliación." });
-
-            return Ok(new { mensaje = "Estado Detalle Conciliación creado correctamente." });
+            await service.CrearEstadoDetalleConciliacion(dto);
+            return Ok();
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Actualizar(int id, [FromBody] ActualizarEstadoDetalleConciliacionDTO dto)
+        public async Task<IActionResult> ActualizarEstadoDetalleConciliacion(int id, [FromBody] UpdateEstadoDetalleConciliacionDTO dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.EDC_Descripcion))
-                return BadRequest(new { mensaje = "La descripción no puede quedar vacia." });
-
-            var resultado = await _service.ActualizarAsync(id, dto);
-
-            if (!resultado)
-                return NotFound(new { mensaje = "No se pudo actualizar. El registro no fue encontrado." });
-
-            return Ok(new { mensaje = "Estado Detalle Conciliación actualizado correctamente." });
+            await service.ActualizarEstadoDetalleConciliacion(id, dto);
+            return Ok();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> EliminarLogico(int id)
+        public async Task<IActionResult> EliminarEstadoDetalleConciliacion(int id)
         {
-            var resultado = await _service.EliminarLogicoAsync(id);
+            await service.EliminarEstadoDetalleConciliacion(id);
+            return Ok();
+        }
 
-            if (!resultado)
-                return NotFound(new { mensaje = "No se pudo eliminar. El registro no fue encontrado." });
-
-            return Ok(new { mensaje = "Estado Detalle Conciliación eliminado correctamente." });
+        [HttpPatch("{id}/reactivar")]
+        public async Task<IActionResult> ReactivarEstadoDetalleConciliacion(int id)
+        {
+            var reactivado = await service.ReactivarEstadoDetalleConciliacion(id);
+            if (!reactivado) return NotFound();
+            return Ok();
         }
     }
 }
