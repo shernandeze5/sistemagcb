@@ -71,5 +71,14 @@ namespace GestionCuentasBancarias.API.Controllers
 
             return Ok(new { mensaje = "EstadoMovimiento eliminado lógicamente." });
         }
+
+        [HttpPatch("{id}/reactivar")]
+        public async Task<IActionResult> Reactivar(int id)
+        {
+            var resultado = await _service.Reactivar(id);
+            if (!resultado)
+                return NotFound(new { mensaje = "No se pudo reactivar. Registro no encontrado." });
+            return Ok(new { mensaje = "EstadoMovimiento reactivado correctamente." });
+        }
     }
 }

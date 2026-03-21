@@ -12,7 +12,7 @@ namespace GestionCuentasBancarias.Domain.Entities
 
         public string ESC_Descripcion { get; set; } = string.Empty;
 
-        public int ESC_Estado { get; set; }
+        public string ESC_Estado { get; set; }=string.Empty;
 
         public DateTime ESC_Fecha_Creacion { get; set; }
     }

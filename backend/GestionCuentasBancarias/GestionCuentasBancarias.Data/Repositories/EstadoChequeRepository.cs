@@ -1,10 +1,10 @@
-using GestionCuentasBancarias.Data.Context;
-using GestionCuentasBancarias.Domain.Entities;
-using GestionCuentasBancarias.Domain.Interfaces.Repositories;
 using Dapper;
+using GestionCuentasBancarias.Domain.DTOS.Cheque;
+using GestionCuentasBancarias.Domain.Interfaces.Repositories;
+using Microsoft.Extensions.Configuration;
+using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,89 +13,93 @@ namespace GestionCuentasBancarias.Data.Repositories
 {
     public class EstadoChequeRepository : IEstadoChequeRepository
     {
-        private readonly OracleConnectionFactory _connectionFactory;
+        private readonly string connectionString;
 
-        public EstadoChequeRepository(OracleConnectionFactory connectionFactory)
+        public EstadoChequeRepository(IConfiguration configuration)
         {
-            _connectionFactory = connectionFactory;
+            connectionString = configuration.GetConnectionString("OracleConnection");
+        }
+        public async Task<IEnumerable<ResponseEstadoChequeDTO>> ObtenerEstadosCheque()
+        {
+            using var connection = new OracleConnection(connectionString);
+
+            string sql = @"SELECT
+                           ESC_Estado_Cheque,
+                           ESC_Descripcion,
+                           ESC_Estado,
+                           ESC_Fecha_Creacion
+                           FROM GCB_ESTADO_CHEQUE
+                           ORDER BY ESC_Descripcion";
+
+            return await connection.QueryAsync<ResponseEstadoChequeDTO>(sql);
         }
 
-        public async Task<IEnumerable<EstadoCheque>> ObtenerTodosAsync()
+        public async Task<ResponseEstadoChequeDTO> ObtenerEstadoChequePorId(int id)
         {
-            using IDbConnection db = _connectionFactory.CreateConnection();
+            using var connection = new OracleConnection(connectionString);
 
-            string sql = @"
-                SELECT
-                    ESC_ESTADO_CHEQUE AS ESC_Estado_Cheque,
-                    ESC_DESCRIPCION AS ESC_Descripcion,
-                    ESC_ESTADO AS ESC_Estado,
-                    ESC_FECHA_CREACION AS ESC_Fecha_Creacion
-                FROM GCB_ESTADO_CHEQUE
-                WHERE ESC_ESTADO = 1
-                ORDER BY ESC_ESTADO_CHEQUE";
+            string sql = @"SELECT
+                           ESC_Estado_Cheque,
+                           ESC_Descripcion,
+                           ESC_Estado,
+                           ESC_Fecha_Creacion
+                           FROM GCB_ESTADO_CHEQUE
+                           WHERE ESC_Estado_Cheque = :Id";
 
-            return await db.QueryAsync<EstadoCheque>(sql);
+            return await connection.QueryFirstOrDefaultAsync<ResponseEstadoChequeDTO>(sql, new { Id = id });
         }
 
-        public async Task<EstadoCheque?> ObtenerPorIdAsync(int id)
+        public async Task<int> CrearEstadoCheque(CreateEstadoChequeDTO dto)
         {
-            using IDbConnection db = _connectionFactory.CreateConnection();
+            using var connection = new OracleConnection(connectionString);
 
-            string sql = @"
-                SELECT
-                    ESC_ESTADO_CHEQUE AS ESC_Estado_Cheque,
-                    ESC_DESCRIPCION AS ESC_Descripcion,
-                    ESC_ESTADO AS ESC_Estado,
-                    ESC_FECHA_CREACION AS ESC_Fecha_Creacion
-                FROM GCB_ESTADO_CHEQUE
-                WHERE ESC_ESTADO_CHEQUE = :Id";
+            string sql = @"INSERT INTO GCB_ESTADO_CHEQUE
+                           (ESC_Descripcion)
+                           VALUES
+                           (:Descripcion)";
 
-            return await db.QueryFirstOrDefaultAsync<EstadoCheque>(sql, new { Id = id });
+            return await connection.ExecuteAsync(sql, new
+            {
+                Descripcion = dto.ESC_Descripcion
+            });
         }
 
-        public async Task<bool> CrearAsync(EstadoCheque entidad)
+        public async Task<bool> ActualizarEstadoCheque(int id, UpdateEstadoChequeDTO dto)
         {
-            using IDbConnection db = _connectionFactory.CreateConnection();
+            using var connection = new OracleConnection(connectionString);
 
-            string sql = @"
-                INSERT INTO GCB_ESTADO_CHEQUE
-                (ESC_DESCRIPCION, ESC_ESTADO, ESC_FECHA_CREACION)
-                VALUES
-                (:ESC_Descripcion, :ESC_Estado, :ESC_Fecha_Creacion)";
+            string sql = @"UPDATE GCB_ESTADO_CHEQUE
+                           SET ESC_Descripcion = :Descripcion
+                           WHERE ESC_Estado_Cheque = :Id";
 
-            int filas = await db.ExecuteAsync(sql, entidad);
+            var rows = await connection.ExecuteAsync(sql, new
+            {
+                Descripcion = dto.ESC_Descripcion,
+                Id = id
+            });
 
-            return filas > 0;
+            return rows > 0;
         }
 
-        public async Task<bool> ActualizarAsync(EstadoCheque entidad)
+        public async Task<bool> EliminarEstadoCheque(int id)
         {
-            using IDbConnection db = _connectionFactory.CreateConnection();
+            using var connection = new OracleConnection(connectionString);
 
-            string sql = @"
-                UPDATE GCB_ESTADO_CHEQUE
-                SET
-                    ESC_DESCRIPCION = :ESC_Descripcion,
-                    ESC_ESTADO = :ESC_Estado
-                WHERE ESC_ESTADO_CHEQUE = :ESC_Estado_Cheque";
+            string sql = @"UPDATE GCB_ESTADO_CHEQUE
+                           SET ESC_Estado = 'I'
+                           WHERE ESC_Estado_Cheque = :Id";
 
-            int filas = await db.ExecuteAsync(sql, entidad);
+            var rows = await connection.ExecuteAsync(sql, new { Id = id });
 
-            return filas > 0;
+            return rows > 0;
         }
 
-        public async Task<bool> EliminarLogicoAsync(int id)
+        public async Task<bool> ReactivarEstadoCheque(int id)
         {
-            using IDbConnection db = _connectionFactory.CreateConnection();
-
-            string sql = @"
-                UPDATE GCB_ESTADO_CHEQUE
-                SET ESC_ESTADO = 0
-                WHERE ESC_ESTADO_CHEQUE = :Id";
-
-            int filas = await db.ExecuteAsync(sql, new { Id = id });
-
-            return filas > 0;
+            using var connection = new OracleConnection(connectionString);
+            string sql = @"UPDATE GCB_ESTADO_CHEQUE SET ESC_Estado = 'A' WHERE ESC_Estado_Cheque = :Id";
+            var rows = await connection.ExecuteAsync(sql, new { Id = id });
+            return rows > 0;
         }
     }
 }

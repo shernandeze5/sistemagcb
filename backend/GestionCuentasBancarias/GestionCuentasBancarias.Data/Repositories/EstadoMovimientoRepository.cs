@@ -29,8 +29,7 @@ namespace GestionCuentasBancarias.Data.Repositories
                     ESM_Descripcion,
                     ESM_Estado,
                     ESM_Fecha_Creacion
-                FROM GCB_ESTADO_MOVIMIENTO
-                WHERE ESM_Estado = 'A'
+                FROM GCB_ESTADO_MOVIMIENTO  
                 ORDER BY ESM_Estado_Movimiento";
 
             return await connection.QueryAsync<EstadoMovimiento>(sql);
@@ -112,6 +111,16 @@ namespace GestionCuentasBancarias.Data.Repositories
 
             var resultado = await connection.ExecuteAsync(sql, new { Id = id });
 
+            return resultado > 0;
+        }
+
+        public async Task<bool> Reactivar(int id)
+        {
+            using var connection = _connectionFactory.CreateConnection();
+            var sql = @"UPDATE GCB_ESTADO_MOVIMIENTO
+                        SET ESM_Estado = 'A'
+                        WHERE ESM_Estado_Movimiento = :Id";
+            var resultado = await connection.ExecuteAsync(sql, new { Id = id });
             return resultado > 0;
         }
     }

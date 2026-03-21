@@ -16,6 +16,7 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod();
     });
 });
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -27,7 +28,7 @@ builder.Services.AddCors(options => {
                           .AllowAnyMethod()
                           .AllowAnyHeader());
 });
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen();   
 builder.Services.AddScoped<OracleConnectionFactory>(sp =>
 {
     var configuration = sp.GetRequiredService<IConfiguration>();

@@ -1,4 +1,3 @@
-using GestionCuentasBancarias.Business.Services;
 using GestionCuentasBancarias.Domain.DTOS.Cheque;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -6,71 +5,61 @@ using Microsoft.AspNetCore.Mvc;
 namespace GestionCuentasBancarias.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/estados-cheque")]
     public class EstadoChequeController : ControllerBase
     {
-        private readonly IEstadoChequeService _service;
+        private readonly IEstadoChequeService service;
 
         public EstadoChequeController(IEstadoChequeService service)
         {
-            _service = service;
+            this.service = service;
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObtenerTodos()
+        public async Task<IActionResult> ObtenerEstadosCheque()
         {
-            var data = await _service.ObtenerTodosAsync();
-            return Ok(data);
+            var estados = await service.ObtenerEstadosCheque();
+            return Ok(estados);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> ObtenerPorId(int id)
+        public async Task<IActionResult> ObtenerEstadoCheque(int id)
         {
-            var data = await _service.ObtenerPorIdAsync(id);
+            var estado = await service.ObtenerEstadoChequePorId(id);
 
-            if (data == null)
-                return NotFound(new { mensaje = "Estado Cheque no encontrado." });
+            if (estado == null)
+                return NotFound();
 
-            return Ok(data);
+            return Ok(estado);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Crear([FromBody] CrearEstadoChequeDTO dto)
+        public async Task<IActionResult> CrearEstadoCheque([FromBody] CreateEstadoChequeDTO dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.ESC_Descripcion))
-                return BadRequest(new { mensaje = "La descripción no puede quedar vacia." });
-
-            var resultado = await _service.CrearAsync(dto);
-
-            if (!resultado)
-                return BadRequest(new { mensaje = "No se pudo crear el nuevo Estado Cheque." });
-
-            return Ok(new { mensaje = "Estado Cheque creado correctamente." });
+            await service.CrearEstadoCheque(dto);
+            return Ok();
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Actualizar(int id, [FromBody] ActualizarEstadoChequeDTO dto)
+        public async Task<IActionResult> ActualizarEstadoCheque(int id, [FromBody] UpdateEstadoChequeDTO dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.ESC_Descripcion))
-                return BadRequest(new { mensaje = "La descripción no puede quedar vacia." });
-
-            var resultado = await _service.ActualizarAsync(id, dto);
-
-            if (!resultado)
-                return NotFound(new { mensaje = "No se pudo actualizar. El registro no fue encontrado." });
-
-            return Ok(new { mensaje = "Estado Cheque actualizado correctamente." });
+            await service.ActualizarEstadoCheque(id, dto);
+            return Ok();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> EliminarLogico(int id)
+        public async Task<IActionResult> EliminarEstadoCheque(int id)
         {
-            var resultado = await _service.EliminarLogicoAsync(id);
+            await service.EliminarEstadoCheque(id);
+            return Ok();
+        }
 
-            if (!resultado)
-                return NotFound(new { mensaje = "No se pudo eliminar. El registro no fue encontrado." });
-
-            return Ok(new { mensaje = "Estado Cheque eliminado correctamente." });
+        [HttpPatch("{id}/reactivar")]
+        public async Task<IActionResult> ReactivarEstadoCheque(int id)
+        {
+            var reactivado = await service.ReactivarEstadoCheque(id);
+            if (!reactivado) return NotFound();
+            return Ok();
         }
     }
 }

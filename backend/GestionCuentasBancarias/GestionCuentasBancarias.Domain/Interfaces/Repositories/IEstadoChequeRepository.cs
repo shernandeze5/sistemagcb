@@ -1,22 +1,20 @@
+using GestionCuentasBancarias.Domain.DTOS.Cheque;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GestionCuentasBancarias.Domain.Entities;
 
 namespace GestionCuentasBancarias.Domain.Interfaces.Repositories
 {
     public interface IEstadoChequeRepository
     {
-        Task<IEnumerable<EstadoCheque>> ObtenerTodosAsync();
+        Task<IEnumerable<ResponseEstadoChequeDTO>> ObtenerEstadosCheque();
+        Task<ResponseEstadoChequeDTO> ObtenerEstadoChequePorId(int id);
+        Task<int> CrearEstadoCheque(CreateEstadoChequeDTO dto);
+        Task<bool> ActualizarEstadoCheque(int id, UpdateEstadoChequeDTO dto);
+        Task<bool> EliminarEstadoCheque(int id);
 
-        Task<EstadoCheque?> ObtenerPorIdAsync(int id);
-
-        Task<bool> CrearAsync(EstadoCheque estadoCheque);
-
-        Task<bool> ActualizarAsync(EstadoCheque estadoCheque);
-
-        Task<bool> EliminarLogicoAsync(int id);
+        Task<bool> ReactivarEstadoCheque(int id);
     }
 }

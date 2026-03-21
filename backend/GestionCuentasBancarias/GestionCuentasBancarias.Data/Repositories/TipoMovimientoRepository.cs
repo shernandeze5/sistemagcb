@@ -30,7 +30,6 @@ namespace GestionCuentasBancarias.Data.Repositories
                     TIM_Estado,
                     TIM_Fecha_Creacion
                 FROM GCB_TIPO_MOVIMIENTO
-                WHERE TIM_Estado = 'A'
                 ORDER BY TIM_Tipo_Movimiento";
 
             return await connection.QueryAsync<TipoMovimiento>(sql);
@@ -112,6 +111,16 @@ namespace GestionCuentasBancarias.Data.Repositories
 
             var resultado = await connection.ExecuteAsync(sql, new { Id = id });
 
+            return resultado > 0;
+        }
+
+        public async Task<bool> Reactivar(int id)
+        {
+            using var connection = _connectionFactory.CreateConnection();
+            var sql = @"UPDATE GCB_TIPO_MOVIMIENTO
+                        SET TIM_Estado = 'A'
+                        WHERE TIM_Tipo_Movimiento = :Id";
+            var resultado = await connection.ExecuteAsync(sql, new { Id = id });
             return resultado > 0;
         }
     }

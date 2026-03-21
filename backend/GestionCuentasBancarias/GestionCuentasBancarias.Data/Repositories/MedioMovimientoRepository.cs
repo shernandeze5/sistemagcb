@@ -30,7 +30,6 @@ namespace GestionCuentasBancarias.Data.Repositories
                     MEM_Estado,
                     MEM_Fecha_Creacion
                 FROM GCB_MEDIO_MOVIMIENTO
-                WHERE MEM_Estado = 'A'
                 ORDER BY MEM_Medio_Movimiento";
 
             return await connection.QueryAsync<MedioMovimiento>(sql);
@@ -112,6 +111,16 @@ namespace GestionCuentasBancarias.Data.Repositories
 
             var resultado = await connection.ExecuteAsync(sql, new { Id = id });
 
+            return resultado > 0;
+        }
+
+        public async Task<bool> Reactivar(int id)
+        {
+            using var connection = _connectionFactory.CreateConnection();
+            var sql = @"UPDATE GCB_MEDIO_MOVIMIENTO
+                        SET MEM_Estado = 'A'
+                        WHERE MEM_Medio_Movimiento = :Id";
+            var resultado = await connection.ExecuteAsync(sql, new { Id = id });
             return resultado > 0;
         }
     }

@@ -1,22 +1,19 @@
+using GestionCuentasBancarias.Domain.DTOS.Conciliacion;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GestionCuentasBancarias.Domain.DTOS.Conciliacion;
 
 namespace GestionCuentasBancarias.Domain.Interfaces.Services
 {
     public interface IEstadoConciliacionService
     {
-        Task<IEnumerable<EstadoConciliacionDTO>> ObtenerTodosAsync();
-
-        Task<EstadoConciliacionDTO?> ObtenerPorIdAsync(int id);
-
-        Task<bool> CrearAsync(CrearEstadoConciliacionDTO dto);
-
-        Task<bool> ActualizarAsync(int id, ActualizarEstadoConciliacionDTO dto);
-
-        Task<bool> EliminarLogicoAsync(int id);
+        Task<IEnumerable<ResponseEstadoConciliacionDTO>> ObtenerEstadosConciliacion();
+        Task<ResponseEstadoConciliacionDTO> ObtenerEstadoConciliacionPorId(int id);
+        Task<int> CrearEstadoConciliacion(CreateEstadoConciliacionDTO dto);
+        Task<bool> ActualizarEstadoConciliacion(int id, UpdateEstadoConciliacionDTO dto);
+        Task<bool> EliminarEstadoConciliacion(int id);
+        Task<bool> ReactivarEstadoConciliacion(int id);
     }
 }

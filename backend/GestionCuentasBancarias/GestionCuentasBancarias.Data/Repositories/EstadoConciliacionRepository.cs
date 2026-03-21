@@ -1,10 +1,10 @@
-using GestionCuentasBancarias.Data.Context;
-using GestionCuentasBancarias.Domain.Entities;
-using GestionCuentasBancarias.Domain.Interfaces.Repositories;
 using Dapper;
+using GestionCuentasBancarias.Domain.DTOS.Conciliacion;
+using GestionCuentasBancarias.Domain.Interfaces.Repositories;
+using Microsoft.Extensions.Configuration;
+using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,89 +13,93 @@ namespace GestionCuentasBancarias.Data.Repositories
 {
     public class EstadoConciliacionRepository : IEstadoConciliacionRepository
     {
-        private readonly OracleConnectionFactory _connectionFactory;
+        private readonly string connectionString;
 
-        public EstadoConciliacionRepository(OracleConnectionFactory connectionFactory)
+        public EstadoConciliacionRepository(IConfiguration configuration)
         {
-            _connectionFactory = connectionFactory;
+            connectionString = configuration.GetConnectionString("OracleConnection");
+        }
+        public async Task<IEnumerable<ResponseEstadoConciliacionDTO>> ObtenerEstadosConciliacion()
+        {
+            using var connection = new OracleConnection(connectionString);
+
+            string sql = @"SELECT
+                           ECO_Estado_Conciliacion,
+                           ECO_Descripcion,
+                           ECO_Estado,
+                           ECO_Fecha_Creacion
+                           FROM GCB_ESTADO_CONCILIACION
+                           ORDER BY ECO_Descripcion";
+
+            return await connection.QueryAsync<ResponseEstadoConciliacionDTO>(sql);
         }
 
-        public async Task<IEnumerable<EstadoConciliacion>> ObtenerTodosAsync()
+        public async Task<ResponseEstadoConciliacionDTO> ObtenerEstadoConciliacionPorId(int id)
         {
-            using IDbConnection db = _connectionFactory.CreateConnection();
+            using var connection = new OracleConnection(connectionString);
 
-            string sql = @"
-                SELECT
-                    ECO_ESTADO_CONCILIACION AS ECO_Estado_Conciliacion,
-                    ECO_DESCRIPCION AS ECO_Descripcion,
-                    ECO_ESTADO AS ECO_Estado,
-                    ECO_FECHA_CREACION AS ECO_Fecha_Creacion
-                FROM GCB_ESTADO_CONCILIACION
-                WHERE ECO_ESTADO = 1
-                ORDER BY ECO_ESTADO_CONCILIACION";
+            string sql = @"SELECT
+                           ECO_Estado_Conciliacion,
+                           ECO_Descripcion,
+                           ECO_Estado,
+                           ECO_Fecha_Creacion
+                           FROM GCB_ESTADO_CONCILIACION
+                           WHERE ECO_Estado_Conciliacion = :Id";
 
-            return await db.QueryAsync<EstadoConciliacion>(sql);
+            return await connection.QueryFirstOrDefaultAsync<ResponseEstadoConciliacionDTO>(sql, new { Id = id });
         }
 
-        public async Task<EstadoConciliacion?> ObtenerPorIdAsync(int id)
+        public async Task<int> CrearEstadoConciliacion(CreateEstadoConciliacionDTO dto)
         {
-            using IDbConnection db = _connectionFactory.CreateConnection();
+            using var connection = new OracleConnection(connectionString);
 
-            string sql = @"
-                SELECT
-                    ECO_ESTADO_CONCILIACION AS ECO_Estado_Conciliacion,
-                    ECO_DESCRIPCION AS ECO_Descripcion,
-                    ECO_ESTADO AS ECO_Estado,
-                    ECP_FECHA_CREACION AS ECP_Fecha_Creacion
-                FROM GCB_ESTADO_CONCILIACION
-                WHERE ESC_ESTADO_CONCILIACION = :Id";
+            string sql = @"INSERT INTO GCB_ESTADO_CONCILIACION
+                           (ECO_Descripcion)
+                           VALUES
+                           (:Descripcion)";
 
-            return await db.QueryFirstOrDefaultAsync<EstadoConciliacion>(sql, new { Id = id });
+            return await connection.ExecuteAsync(sql, new
+            {
+                Descripcion = dto.ECO_Descripcion
+            });
         }
 
-        public async Task<bool> CrearAsync(EstadoConciliacion entidad)
+        public async Task<bool> ActualizarEstadoConciliacion(int id, UpdateEstadoConciliacionDTO dto)
         {
-            using IDbConnection db = _connectionFactory.CreateConnection();
+            using var connection = new OracleConnection(connectionString);
 
-            string sql = @"
-                INSERT INTO GCB_ESTADO_CONCILIACION
-                (ECO_DESCRIPCION, ECO_ESTADO, ECO_FECHA_CREACION)
-                VALUES
-                (:ECO_Descripcion, :ECO_Estado, :ECO_Fecha_Creacion)";
+            string sql = @"UPDATE GCB_ESTADO_CONCILIACION
+                           SET ECO_Descripcion = :Descripcion
+                           WHERE ECO_Estado_Conciliacion = :Id";
 
-            int filas = await db.ExecuteAsync(sql, entidad);
+            var rows = await connection.ExecuteAsync(sql, new
+            {
+                Descripcion = dto.ECO_Descripcion,
+                Id = id
+            });
 
-            return filas > 0;
+            return rows > 0;
         }
 
-        public async Task<bool> ActualizarAsync(EstadoConciliacion entidad)
+        public async Task<bool> EliminarEstadoConciliacion(int id)
         {
-            using IDbConnection db = _connectionFactory.CreateConnection();
+            using var connection = new OracleConnection(connectionString);
 
-            string sql = @"
-                UPDATE GCB_ESTADO_CONCILIACION
-                SET
-                    ECO_DESCRIPCION = :ECO_Descripcion,
-                    ECO_ESTADO = :ECO_Estado
-                WHERE ECO_ESTADO_CONCILIACION = :ESC_Estado_Conciliacion";
+            string sql = @"UPDATE GCB_ESTADO_CONCILIACION
+                           SET ECO_Estado = 'I'
+                           WHERE ECO_Estado_Conciliacion = :Id";
 
-            int filas = await db.ExecuteAsync(sql, entidad);
+            var rows = await connection.ExecuteAsync(sql, new { Id = id });
 
-            return filas > 0;
+            return rows > 0;
         }
 
-        public async Task<bool> EliminarLogicoAsync(int id)
+        public async Task<bool> ReactivarEstadoConciliacion(int id)
         {
-            using IDbConnection db = _connectionFactory.CreateConnection();
-
-            string sql = @"
-                UPDATE GCB_ESTADO_CONCILIACION
-                SET ECO_ESTADO = 0
-                WHERE ECO_ESTADO_CONCILIACION = :Id";
-
-            int filas = await db.ExecuteAsync(sql, new { Id = id });
-
-            return filas > 0;
+            using var connection = new OracleConnection(connectionString);
+            string sql = @"UPDATE GCB_ESTADO_CONCILIACION SET ECO_Estado = 'A' WHERE ECO_Estado_Conciliacion = :Id";
+            var rows = await connection.ExecuteAsync(sql, new { Id = id });
+            return rows > 0;
         }
     }
 }

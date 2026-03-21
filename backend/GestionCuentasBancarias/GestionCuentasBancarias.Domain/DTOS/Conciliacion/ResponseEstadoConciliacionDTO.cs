@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace GestionCuentasBancarias.Domain.DTOS.Conciliacion
 {
-    public class ActualizarEstadoConciliacionDTO
+    public class ResponseEstadoConciliacionDTO
     {
+        public int ECO_Estado_Conciliacion { get; set; }
         public string ECO_Descripcion { get; set; } = string.Empty;
-
-        public int ECO_Estado { get; set; }
+        public string ECO_Estado { get; set; } = string.Empty;
+        public DateTime ECO_Fecha_Creacion { get; set; }
     }
 }
