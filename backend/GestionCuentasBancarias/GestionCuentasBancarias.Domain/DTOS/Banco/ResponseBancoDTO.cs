@@ -12,5 +12,6 @@ namespace GestionCuentasBancarias.Domain.DTOS.Banco
         public string BAN_Nombre { get; set; } = string.Empty;  
         public string BAN_Codigo_Swift { get; set; } = string.Empty;
         public string BAN_Estado { get; set; } = string.Empty;
+        public DateTime BAN_Fecha_Creacion { get; set; }
     }
 }

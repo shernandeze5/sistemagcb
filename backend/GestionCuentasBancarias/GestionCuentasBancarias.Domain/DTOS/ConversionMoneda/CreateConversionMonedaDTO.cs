@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace GestionCuentasBancarias.Domain.DTOS.ConversionMoneda
+{
+    public class CreateConversionMonedaDTO
+    {
+        public int TMO_Tipo_Moneda { get; set; }
+        public int TMO_Tipo_Moneda_Destino { get; set; }
+        public decimal COM_Tasa_Cambio { get; set; }
+        public DateTime COM_Fecha_Vigencia { get; set; }
+        public string COM_Fuente { get; set; } = "M";
+    }
+}

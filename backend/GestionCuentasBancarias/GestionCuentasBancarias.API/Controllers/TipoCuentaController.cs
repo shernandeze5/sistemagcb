@@ -1,5 +1,4 @@
-﻿using GestionCuentasBancarias.Domain.DTOS;
-using GestionCuentasBancarias.Domain.DTOS.TipoCuenta;
+﻿using GestionCuentasBancarias.Domain.DTOS.TipoCuenta;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,32 +26,44 @@ namespace GestionCuentasBancarias.API.Controllers
         public async Task<IActionResult> ObtenerTipoCuenta(int id)
         {
             var tipo = await service.ObtenerTipoCuentaPorId(id);
-
-            if (tipo == null)
-                return NotFound();
-
+            if (tipo == null) return NotFound();
             return Ok(tipo);
         }
 
         [HttpPost]
         public async Task<IActionResult> CrearTipoCuenta([FromBody] CreateTipoCuentaDTO dto)
         {
-            await service.CrearTipoCuenta(dto);
-            return Ok();
+            try
+            {
+                await service.CrearTipoCuenta(dto);
+                return Ok(new { mensaje = "Tipo de cuenta creado correctamente." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { mensaje = ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> ActualizarTipoCuenta(int id, [FromBody] UpdateTipoCuentaDTO dto)
         {
-            await service.ActualizarTipoCuenta(id, dto);
-            return Ok();
+            try
+            {
+                await service.ActualizarTipoCuenta(id, dto);
+                return Ok(new { mensaje = "Tipo de cuenta actualizado correctamente." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { mensaje = ex.Message });
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> EliminarTipoCuenta(int id)
         {
-            await service.EliminarTipoCuenta(id);
-            return Ok();
+            var deleted = await service.EliminarTipoCuenta(id);
+            if (!deleted) return NotFound();
+            return Ok(new { mensaje = "Tipo de cuenta desactivado correctamente." });
         }
 
         [HttpPatch("{id}/reactivar")]
@@ -60,8 +71,7 @@ namespace GestionCuentasBancarias.API.Controllers
         {
             var reactivado = await service.ReactivarTipoCuenta(id);
             if (!reactivado) return NotFound();
-            return Ok();
+            return Ok(new { mensaje = "Tipo de cuenta reactivado correctamente." });
         }
-
     }
 }
