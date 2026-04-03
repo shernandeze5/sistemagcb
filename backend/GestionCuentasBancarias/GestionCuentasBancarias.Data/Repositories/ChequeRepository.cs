@@ -97,9 +97,16 @@ namespace GestionCuentasBancarias.Data.Repositories
                     :CHE_Concepto
                 )";
 
-            using var connection = _connectionFactory.CreateConnection();
-            var filasAfectadas = await connection.ExecuteAsync(sql, cheque);
-            return filasAfectadas > 0;
+             using var connection = _connectionFactory.CreateConnection();
+             var existe = await connection.ExecuteScalarAsync<int>(
+                "SELECT COUNT(1) FROM GCB_CHEQUE WHERE CHE_Numero_Cheque = :numero",
+                 new { numero = cheque.CHE_Numero_Cheque }
+             );
+
+             if (existe > 0)
+                return false;
+             var filasAfectadas = await connection.ExecuteAsync(sql, cheque);
+                return filasAfectadas > 0;
         }
 
         public async Task<bool> ActualizarAsync(Cheque cheque)
