@@ -92,6 +92,9 @@ builder.Services.AddScoped<IReglaRecargoService, ReglaRecargoService>();
 builder.Services.AddScoped<IConversionMonedaRepository, ConversionMonedaRepository>();
 builder.Services.AddScoped<IConversionMonedaService, ConversionMonedaService>();
 
+builder.Services.AddScoped<IChequeraRepository, ChequeraRepository>();
+builder.Services.AddScoped<IChequeraService, ChequeraService>();
+
 var app = builder.Build();
 
 app.UseCors("FrontendPolicy");
