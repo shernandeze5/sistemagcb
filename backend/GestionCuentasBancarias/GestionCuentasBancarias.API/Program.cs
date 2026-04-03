@@ -92,8 +92,12 @@ builder.Services.AddScoped<IReglaRecargoService, ReglaRecargoService>();
 builder.Services.AddScoped<IConversionMonedaRepository, ConversionMonedaRepository>();
 builder.Services.AddScoped<IConversionMonedaService, ConversionMonedaService>();
 
+builder.Services.AddScoped<IChequeraRepository, ChequeraRepository>();
+builder.Services.AddScoped<IChequeraService, ChequeraService>();
+
 builder.Services.AddScoped<ICuentaBancariaRepository, CuentaBancariaRepository>();
 builder.Services.AddScoped<ICuentaBancariaService, CuentaBancariaService>();    
+
 
 var app = builder.Build();
 
