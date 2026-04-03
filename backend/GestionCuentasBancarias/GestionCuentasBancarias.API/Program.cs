@@ -96,7 +96,10 @@ builder.Services.AddScoped<IChequeraRepository, ChequeraRepository>();
 builder.Services.AddScoped<IChequeraService, ChequeraService>();
 
 builder.Services.AddScoped<ICuentaBancariaRepository, CuentaBancariaRepository>();
-builder.Services.AddScoped<ICuentaBancariaService, CuentaBancariaService>();    
+builder.Services.AddScoped<ICuentaBancariaService, CuentaBancariaService>();
+
+builder.Services.AddScoped<IChequeRepository, ChequeRepository>();
+builder.Services.AddScoped<IChequeService, ChequeService>();
 
 
 var app = builder.Build();
