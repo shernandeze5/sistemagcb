@@ -39,6 +39,9 @@ namespace GestionCuentasBancarias.API.Controllers
             if (dto.MOV_Movimiento <= 0)
                 return BadRequest(new { mensaje = "El movimiento es obligatorio." });
 
+            if (!dto.CHQ_Chequera.HasValue || dto.CHQ_Chequera.Value <= 0)
+                return BadRequest(new { mensaje = "La chequera es obligatoria." });
+
             if (string.IsNullOrWhiteSpace(dto.CHE_Numero_Cheque))
                 return BadRequest(new { mensaje = "El número de cheque es obligatorio." });
 
@@ -48,7 +51,10 @@ namespace GestionCuentasBancarias.API.Controllers
             var resultado = await _service.CrearAsync(dto);
 
             if (!resultado)
-                return BadRequest(new { mensaje = "No se pudo crear el Cheque." });
+                return BadRequest(new
+                {
+                    mensaje = "No se pudo crear el cheque. Verifica que la chequera exista, esté activa y tenga cheques disponibles."
+                });
 
             return Ok(new { mensaje = "Cheque creado correctamente." });
         }
@@ -58,6 +64,9 @@ namespace GestionCuentasBancarias.API.Controllers
         {
             if (dto.MOV_Movimiento <= 0)
                 return BadRequest(new { mensaje = "El movimiento es obligatorio." });
+
+            if (!dto.CHQ_Chequera.HasValue || dto.CHQ_Chequera.Value <= 0)
+                return BadRequest(new { mensaje = "La chequera es obligatoria." });
 
             if (string.IsNullOrWhiteSpace(dto.CHE_Numero_Cheque))
                 return BadRequest(new { mensaje = "El número de cheque es obligatorio." });
