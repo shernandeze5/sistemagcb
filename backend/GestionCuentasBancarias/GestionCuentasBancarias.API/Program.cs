@@ -20,6 +20,7 @@ builder.Services.AddCors(options =>
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddHttpClient();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCors(options => {
@@ -78,6 +79,27 @@ builder.Services.AddScoped<IEstadoConciliacionService, EstadoConciliacionService
 
 builder.Services.AddScoped<IEstadoDetalleConciliacionRepository, EstadoDetalleConciliacionRepository>();
 builder.Services.AddScoped<IEstadoDetalleConciliacionService, EstadoDetalleConciliacionService>();
+
+builder.Services.AddScoped<ITasaInteresRepository, TasaInteresRepository>();
+builder.Services.AddScoped<ITasaInteresService, TasaInteresService>();
+
+builder.Services.AddScoped<IinteresFrecuenciaRepository, InteresFrecuenciaRepository>();
+builder.Services.AddScoped<IinteresFrecuenciaService, InteresFrecuenciaService>();
+
+builder.Services.AddScoped<IReglaRecargoRepository, ReglaRecargoRepository>();
+builder.Services.AddScoped<IReglaRecargoService, ReglaRecargoService>();
+
+builder.Services.AddScoped<IConversionMonedaRepository, ConversionMonedaRepository>();
+builder.Services.AddScoped<IConversionMonedaService, ConversionMonedaService>();
+
+builder.Services.AddScoped<IChequeraRepository, ChequeraRepository>();
+builder.Services.AddScoped<IChequeraService, ChequeraService>();
+
+builder.Services.AddScoped<ICuentaBancariaRepository, CuentaBancariaRepository>();
+builder.Services.AddScoped<ICuentaBancariaService, CuentaBancariaService>();
+
+builder.Services.AddScoped<IChequeRepository, ChequeRepository>();
+builder.Services.AddScoped<IChequeService, ChequeService>();
 
 
 var app = builder.Build();

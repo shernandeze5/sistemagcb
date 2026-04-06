@@ -3,10 +3,8 @@ using GestionCuentasBancarias.Domain.DTOS.Banco;
 using GestionCuentasBancarias.Domain.Interfaces.Repositories;
 using Microsoft.Extensions.Configuration;
 using Oracle.ManagedDataAccess.Client;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace GestionCuentasBancarias.Data.Repositories
@@ -19,19 +17,18 @@ namespace GestionCuentasBancarias.Data.Repositories
         {
             connectionString = configuration.GetConnectionString("OracleConnection");
         }
+
         public async Task<List<ResponseBancoDTO>> ObtenerBancos()
         {
             using var connection = new OracleConnection(connectionString);
-
             string sql = @"SELECT
-                           BAN_Banco,
-                           BAN_Nombre,
-                           BAN_Codigo_Swift,
-                           BAN_Estado,
-                           BAN_Fecha_Creacion
+                               BAN_Banco,
+                               BAN_Nombre,
+                               BAN_Codigo_Swift,
+                               BAN_Estado,
+                               BAN_Fecha_Creacion
                            FROM GCB_BANCO
                            ORDER BY BAN_Nombre";
-
             var result = await connection.QueryAsync<ResponseBancoDTO>(sql);
             return result.ToList();
         }
@@ -39,16 +36,14 @@ namespace GestionCuentasBancarias.Data.Repositories
         public async Task<ResponseBancoDTO> ObtenerBancoPorId(int id)
         {
             using var connection = new OracleConnection(connectionString);
-
             string sql = @"SELECT
-                           BAN_Banco,
-                           BAN_Nombre,
-                           BAN_Codigo_Swift,
-                           BAN_Estado,
-                           BAN_Fecha_Creacion
+                               BAN_Banco,
+                               BAN_Nombre,
+                               BAN_Codigo_Swift,
+                               BAN_Estado,
+                               BAN_Fecha_Creacion
                            FROM GCB_BANCO
                            WHERE BAN_Banco = :Id";
-
             return await connection.QueryFirstOrDefaultAsync<ResponseBancoDTO>(sql, new { Id = id });
         }
 
@@ -56,24 +51,52 @@ namespace GestionCuentasBancarias.Data.Repositories
         {
             using var connection = new OracleConnection(connectionString);
 
-            string sql = @"INSERT INTO GCB_BANCO
-                           (BAN_Nombre, BAN_Codigo_Swift)
-                           VALUES
-                           (:Nombre, :Swift)";
+            // Validar duplicado: mismo nombre O mismo SWIFT (sin importar mayúsculas)
+            string sqlDup = @"SELECT COUNT(*) FROM GCB_BANCO
+                              WHERE UPPER(BAN_Nombre) = UPPER(:Nombre)
+                                 OR UPPER(BAN_Codigo_Swift) = UPPER(:Swift)";
+
+            var existe = await connection.ExecuteScalarAsync<int>(sqlDup, new
+            {
+                Nombre = dto.BAN_Nombre,
+                Swift = dto.BAN_Codigo_Swift
+            });
+
+            if (existe > 0)
+                throw new InvalidOperationException("Ya existe un banco con el mismo nombre o código SWIFT.");
+
+            string sql = @"INSERT INTO GCB_BANCO (BAN_Nombre, BAN_Codigo_Swift)
+                           VALUES (:Nombre, :Swift)";
 
             await connection.ExecuteAsync(sql, new
             {
                 Nombre = dto.BAN_Nombre,
                 Swift = dto.BAN_Codigo_Swift
-            }); 
+            });
         }
 
         public async Task<bool> ActualizarBanco(int id, UpdataBancoDTO dto)
         {
             using var connection = new OracleConnection(connectionString);
 
+            // Validar duplicado excluyendo el propio registro
+            string sqlDup = @"SELECT COUNT(*) FROM GCB_BANCO
+                              WHERE (UPPER(BAN_Nombre) = UPPER(:Nombre)
+                                  OR UPPER(BAN_Codigo_Swift) = UPPER(:Swift))
+                                AND BAN_Banco != :Id";
+
+            var existe = await connection.ExecuteScalarAsync<int>(sqlDup, new
+            {
+                Nombre = dto.BAN_Nombre,
+                Swift = dto.BAN_Codigo_Swift,
+                Id = id
+            });
+
+            if (existe > 0)
+                throw new InvalidOperationException("Ya existe otro banco con el mismo nombre o código SWIFT.");
+
             string sql = @"UPDATE GCB_BANCO
-                           SET BAN_Nombre = :Nombre,
+                           SET BAN_Nombre       = :Nombre,
                                BAN_Codigo_Swift = :Swift
                            WHERE BAN_Banco = :Id";
 
@@ -90,13 +113,8 @@ namespace GestionCuentasBancarias.Data.Repositories
         public async Task<bool> EliminarBanco(int id)
         {
             using var connection = new OracleConnection(connectionString);
-
-            string sql = @"UPDATE GCB_BANCO
-                           SET BAN_Estado = 'I'
-                           WHERE BAN_Banco = :Id";
-
+            string sql = @"UPDATE GCB_BANCO SET BAN_Estado = 'I' WHERE BAN_Banco = :Id";
             var rows = await connection.ExecuteAsync(sql, new { Id = id });
-
             return rows > 0;
         }
 

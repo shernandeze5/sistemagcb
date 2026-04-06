@@ -26,40 +26,55 @@ namespace GestionCuentasBancarias.API.Controllers
         public async Task<IActionResult> ObtenerBanco(int id)
         {
             var banco = await service.ObtenerBancoPorId(id);
-
-            if (banco == null)
-                return NotFound();
-
+            if (banco == null) return NotFound();
             return Ok(banco);
         }
 
         [HttpPost]
         public async Task<IActionResult> CrearBanco([FromBody] CreateBancoDTO dto)
         {
-            await service.CrearBanco(dto);
-            return Ok();
+            try
+            {
+                await service.CrearBanco(dto);
+                return Ok(new { mensaje = "Banco creado correctamente." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { mensaje = ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> ActualizarBanco(int id, [FromBody] UpdataBancoDTO dto)
         {
-            await service.ActualizarBanco(id, dto);
-            return Ok();
+            try
+            {
+                var updated = await service.ActualizarBanco(id, dto);
+                if (!updated) return NotFound();
+                return Ok(new { mensaje = "Banco actualizado correctamente." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { mensaje = ex.Message });
+            }
         }
 
+        // Baja lógica → BAN_Estado = 'I'
         [HttpDelete("{id}")]
         public async Task<IActionResult> EliminarBanco(int id)
         {
-            await service.EliminarBanco(id);
-            return Ok();
+            var deleted = await service.EliminarBanco(id);
+            if (!deleted) return NotFound();
+            return Ok(new { mensaje = "Banco desactivado correctamente." });
         }
 
+        // Reactivación → BAN_Estado = 'A'
         [HttpPatch("{id}/reactivar")]
         public async Task<IActionResult> ReactivarBanco(int id)
         {
             var reactivado = await service.ReactivarBanco(id);
             if (!reactivado) return NotFound();
-            return Ok();
+            return Ok(new { mensaje = "Banco reactivado correctamente." });
         }
     }
 }

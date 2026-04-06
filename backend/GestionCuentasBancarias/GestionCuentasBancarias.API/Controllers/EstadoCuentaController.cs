@@ -26,32 +26,44 @@ namespace GestionCuentasBancarias.API.Controllers
         public async Task<IActionResult> ObtenerEstadoCuenta(int id)
         {
             var estado = await service.ObtenerEstadoCuentaPorId(id);
-
-            if (estado == null)
-                return NotFound();
-
+            if (estado == null) return NotFound();
             return Ok(estado);
         }
 
         [HttpPost]
         public async Task<IActionResult> CrearEstadoCuenta([FromBody] CreateEstadoCuentaDTO dto)
         {
-            await service.CrearEstadoCuenta(dto);
-            return Ok();
+            try
+            {
+                await service.CrearEstadoCuenta(dto);
+                return Ok(new { mensaje = "Estado de cuenta creado correctamente." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { mensaje = ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> ActualizarEstadoCuenta(int id, [FromBody] UpdateEstadoCuentaDTO dto)
         {
-            await service.ActualizarEstadoCuenta(id, dto);
-            return Ok();
+            try
+            {
+                await service.ActualizarEstadoCuenta(id, dto);
+                return Ok(new { mensaje = "Estado de cuenta actualizado correctamente." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { mensaje = ex.Message });
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> EliminarEstadoCuenta(int id)
         {
-            await service.EliminarEstadoCuenta(id);
-            return Ok();
+            var deleted = await service.EliminarEstadoCuenta(id);
+            if (!deleted) return NotFound();
+            return Ok(new { mensaje = "Estado de cuenta desactivado correctamente." });
         }
 
         [HttpPatch("{id}/reactivar")]
@@ -59,7 +71,7 @@ namespace GestionCuentasBancarias.API.Controllers
         {
             var reactivado = await service.ReactivarEstadoCuenta(id);
             if (!reactivado) return NotFound();
-            return Ok();
+            return Ok(new { mensaje = "Estado de cuenta reactivado correctamente." });
         }
     }
 }
