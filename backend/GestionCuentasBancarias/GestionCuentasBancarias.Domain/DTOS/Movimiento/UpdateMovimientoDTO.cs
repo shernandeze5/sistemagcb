@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace GestionCuentasBancarias.Domain.DTOS
 {
-    public class ActualizarMovimientoDTO
+    public class UpdateMovimientoDTO
     {
-        public string MOV_Descripcion { get; set; } = string.Empty;
-        public int ESM_Estado_Movimiento { get; set; }
+        public string? MOV_Descripcion { get; set; }
+        public string? MOV_Numero_Referencia { get; set; }
     }
 }
