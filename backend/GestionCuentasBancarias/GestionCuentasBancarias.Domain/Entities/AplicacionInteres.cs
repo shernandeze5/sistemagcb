@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GestionCuentasBancarias.Domain.DTOS.AplicacionInteres
+namespace GestionCuentasBancarias.Domain.Entities
 {
-    public class ResponseAplicacionInteresDTO
+    public class AplicacionInteres
     {
         public int AIN_Aplicacion_Interes { get; set; }
         public int TIN_Tasa_Interes { get; set; }

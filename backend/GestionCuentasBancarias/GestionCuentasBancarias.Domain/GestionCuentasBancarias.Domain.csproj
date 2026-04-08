@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="DTOS\Conciliacion\" />
+    <Compile Remove="DTOS\Conciliacion\**" />
+    <EmbeddedResource Remove="DTOS\Conciliacion\**" />
+    <None Remove="DTOS\Conciliacion\**" />
   </ItemGroup>
 
 </Project>

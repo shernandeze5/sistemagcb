@@ -19,5 +19,8 @@ namespace GestionCuentasBancarias.Domain.DTOS
         public decimal MOV_Monto { get; set; }
         public decimal MOV_Saldo { get; set; }
         public int ESM_Estado_Movimiento { get; set; }
+
+        public decimal? MOV_Monto_Origen { get; set; }
+
     }
 }

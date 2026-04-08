@@ -111,6 +111,9 @@ builder.Services.AddScoped<ITelefonoPersonaService, TelefonoPersonaService>();
 builder.Services.AddScoped<IDireccionPersonaRepository, DireccionPersonaRepository>();
 builder.Services.AddScoped<IDireccionPersonaService, DireccionPersonaService>();
 
+builder.Services.AddScoped<IAplicacionInteresRepository, AplicacionInteresRepository>();
+builder.Services.AddScoped<IAplicacionInteresService, AplicacionInteresService>();
+
 
 var app = builder.Build();
 
@@ -131,5 +134,11 @@ app.UseCors("AllowReactApp");
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var service = scope.ServiceProvider.GetRequiredService<IAplicacionInteresService>();
+    await service.AplicarInteresesAutomaticos();
+}
 
 app.Run();

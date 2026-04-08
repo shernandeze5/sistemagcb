@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GestionCuentasBancarias.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/medio-movimiento")]
     public class MedioMovimientoController : ControllerBase
     {
         private readonly IMedioMovimientoService _service;

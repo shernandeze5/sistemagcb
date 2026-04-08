@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GestionCuentasBancarias.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/estado-movimiento")]
     public class EstadoMovimientoController : ControllerBase
     {
         private readonly IEstadoMovimientoService _service;
