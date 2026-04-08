@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System;
-using System.Collections.Generic;
 using GestionCuentasBancarias.Domain.DTOS.Cheque;
 using GestionCuentasBancarias.Domain.Entities;
 using GestionCuentasBancarias.Domain.Interfaces.Repositories;
@@ -15,10 +12,14 @@ namespace GestionCuentasBancarias.Business.Services
     public class ChequeService : IChequeService
     {
         private readonly IChequeRepository _repository;
+        private readonly IChequeraRepository _chequeraRepository;
 
-        public ChequeService(IChequeRepository repository)
+        public ChequeService(
+            IChequeRepository repository,
+            IChequeraRepository chequeraRepository)
         {
             _repository = repository;
+            _chequeraRepository = chequeraRepository;
         }
 
         public async Task<IEnumerable<ResponseChequeDTO>> ObtenerTodosAsync()
@@ -68,6 +69,31 @@ namespace GestionCuentasBancarias.Business.Services
 
         public async Task<bool> CrearAsync(CrearChequeDTO dto)
         {
+            if (!dto.CHQ_Chequera.HasValue || dto.CHQ_Chequera.Value <= 0)
+                return false;
+
+            var chequera = await _chequeraRepository.ObtenerPorIdAsync(dto.CHQ_Chequera.Value);
+
+            if (chequera == null)
+                return false;
+
+            if (chequera.CHQ_Estado != "Activa")
+                return false;
+
+            int siguienteNumero;
+
+            if (chequera.CHQ_Ultimo_Usado <= 0)
+                siguienteNumero = chequera.CHQ_Numero_Desde;
+            else
+                siguienteNumero = chequera.CHQ_Ultimo_Usado + 1;
+
+            if (siguienteNumero > chequera.CHQ_Numero_Hasta)
+            {
+                chequera.CHQ_Estado = "Agotada";
+                await _chequeraRepository.ActualizarAsync(chequera);
+                return false;
+            }
+
             var entidad = new Cheque
             {
                 MOV_Movimiento = dto.MOV_Movimiento,
@@ -83,7 +109,19 @@ namespace GestionCuentasBancarias.Business.Services
                 CHE_Concepto = dto.CHE_Concepto
             };
 
-            return await _repository.CrearAsync(entidad);
+            var creado = await _repository.CrearAsync(entidad);
+
+            if (!creado)
+                return false;
+
+            chequera.CHQ_Ultimo_Usado = siguienteNumero;
+
+            if (chequera.CHQ_Ultimo_Usado >= chequera.CHQ_Numero_Hasta)
+                chequera.CHQ_Estado = "Agotada";
+
+            var actualizada = await _chequeraRepository.ActualizarAsync(chequera);
+
+            return actualizada;
         }
 
         public async Task<bool> ActualizarAsync(int id, ActualizarChequeDTO dto)
