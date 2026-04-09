@@ -17,7 +17,8 @@ namespace GestionCuentasBancarias.Data.Repositories
 
         public CuentaBancariaRepository(IConfiguration configuration)
         {
-            connectionString = configuration.GetConnectionString("OracleConnection");
+            connectionString = configuration.GetConnectionString("OracleConnection")
+                ?? throw new InvalidOperationException("No se encontró la cadena de conexión.");
         }
 
         private const string SELECT_BASE = @"
@@ -63,11 +64,15 @@ namespace GestionCuentasBancarias.Data.Repositories
             return result.ToList();
         }
 
-        public async Task<ResponseCuentaBancariaDTO> ObtenerCuentaPorId(int id)
+        public async Task<ResponseCuentaBancariaDTO?> ObtenerCuentaPorId(int id)
         {
             using var connection = new OracleConnection(connectionString);
+
             string sql = $"{SELECT_BASE} WHERE c.CUB_Cuenta = :Id";
-            return await connection.QueryFirstOrDefaultAsync<ResponseCuentaBancariaDTO>(sql, new { Id = id });
+
+            var result = await connection.QueryFirstOrDefaultAsync<ResponseCuentaBancariaDTO>(sql, new { Id = id });
+
+            return result;
         }
 
         public async Task CrearCuenta(CreateCuentaBancariaDTO dto)
@@ -164,6 +169,30 @@ namespace GestionCuentasBancarias.Data.Repositories
                            WHERE CUB_Cuenta = :Id";
             var rows = await connection.ExecuteAsync(sql, new { Id = id });
             return rows > 0;
+        }
+        public async Task<decimal> ObtenerSaldoActual(int cuentaId)
+        {
+            using var connection = new OracleConnection(connectionString);
+
+            string sql = @"SELECT CUB_Saldo_Actual 
+                   FROM GCB_CUENTA_BANCARIA 
+                   WHERE CUB_Cuenta = :Id";
+
+            return await connection.ExecuteScalarAsync<decimal>(sql, new { Id = cuentaId });
+        }
+        public async Task ActualizarSaldoActual(int cuentaId, decimal nuevoSaldo)
+        {
+            using var connection = new OracleConnection(connectionString);
+
+            string sql = @"UPDATE GCB_CUENTA_BANCARIA
+                   SET CUB_Saldo_Actual = :Saldo
+                   WHERE CUB_Cuenta = :Id";
+
+            await connection.ExecuteAsync(sql, new
+            {
+                Saldo = nuevoSaldo,
+                Id = cuentaId
+            });
         }
     }
 }

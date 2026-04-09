@@ -9,10 +9,10 @@ namespace GestionCuentasBancarias.Domain.DTOS.ReglaRecargo
     public class CreateReglaRecargoDTO
     {
         public int CUB_Cuenta { get; set; }
-        public string RCA_Descripcion { get; set; } = string.Empty;
-        public string RCA_Origen { get; set; } = string.Empty;   // C=Cuenta Q=Chequera T=Transferencia S=Servicio
+        public string RCA_Descripcion { get; set; } = null!;
+        public string RCA_Origen { get; set; } = null!; // C,Q,T,S
         public decimal RCA_Monto { get; set; }
-        public string RCA_Frecuencia { get; set; } = string.Empty; // M=Mensual U=Única vez O=Por operación
+        public string RCA_Frecuencia { get; set; } = null!; // M,U,O
         public int? RCA_Dia_Cobro { get; set; }
     }
 }

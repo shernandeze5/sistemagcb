@@ -8,9 +8,10 @@ namespace GestionCuentasBancarias.Domain.DTOS.ReglaRecargo
 {
     public class UpdateReglaRecargoDTO
     {
-        public string RCA_Descripcion { get; set; } = string.Empty;
+        public string RCA_Descripcion { get; set; } = null!;
+        public string RCA_Origen { get; set; } = null!;
         public decimal RCA_Monto { get; set; }
-        public string RCA_Frecuencia { get; set; } = string.Empty;
+        public string RCA_Frecuencia { get; set; } = null!;
         public int? RCA_Dia_Cobro { get; set; }
     }
 }

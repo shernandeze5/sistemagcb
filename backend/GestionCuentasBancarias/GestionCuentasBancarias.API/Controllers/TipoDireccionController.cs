@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GestionCuentasBancarias.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/tipodireccion")]
     public class TipoDireccionController : ControllerBase
     {
         private readonly ITipoDireccionService _service;
