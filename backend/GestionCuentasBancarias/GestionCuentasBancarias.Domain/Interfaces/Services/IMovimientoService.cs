@@ -9,10 +9,10 @@ namespace GestionCuentasBancarias.Domain.Interfaces.Services
 {
     public interface IMovimientoService
     {
-        Task<int> CrearMovimiento(CreateMovimientoDTO dto);
-
+        Task<int> Crear(CreateMovimientoDTO dto);
+        Task<IEnumerable<ResponseMovimientoDTO>> ObtenerTodos();
         Task<ResponseMovimientoDTO?> ObtenerPorId(int id);
-
         Task<IEnumerable<ResponseMovimientoDTO>> ObtenerPorCuenta(int cuentaId);
+        Task Anular(int id);
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GestionCuentasBancarias.Domain.DTOS;
-using GestionCuentasBancarias.Domain.Entities;
+﻿using GestionCuentasBancarias.Domain.DTOS;
 using GestionCuentasBancarias.Domain.Interfaces.Repositories;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
 
@@ -12,90 +6,92 @@ namespace GestionCuentasBancarias.Business.Services
 {
     public class MovimientoService : IMovimientoService
     {
-        private readonly IMovimientoRepository movRepo;
-        private readonly ICuentaBancariaRepository cuentaRepo;
+        private readonly IMovimientoRepository repository;
 
-        public MovimientoService(
-            IMovimientoRepository movRepo,
-            ICuentaBancariaRepository cuentaRepo)
+        public MovimientoService(IMovimientoRepository repository)
         {
-            this.movRepo = movRepo;
-            this.cuentaRepo = cuentaRepo;
+            this.repository = repository;
         }
 
-        // 🔥 CREAR MOVIMIENTO (CORREGIDO → DEVUELVE ID)
-        public async Task<int> CrearMovimiento(CreateMovimientoDTO dto)
+        public async Task<int> Crear(CreateMovimientoDTO dto)
         {
-            var saldoActual = await cuentaRepo.ObtenerSaldoActual(dto.CUB_Cuenta);
-            decimal nuevoSaldo = saldoActual;
+            ValidarDto(dto);
+            await ValidarCatalogos(dto);
 
-            switch (dto.TIM_Tipo_Movimiento)
-            {
-                case 1: // DEPÓSITO
-                    nuevoSaldo += dto.MOV_Monto;
-                    break;
-
-                case 2: // RETIRO
-                    if (saldoActual < dto.MOV_Monto)
-                        throw new Exception("Saldo insuficiente");
-
-                    nuevoSaldo -= dto.MOV_Monto;
-                    break;
-
-                case 3: // TRANSFERENCIA
-                    if (dto.CUB_Cuenta_Destino == null)
-                        throw new Exception("Cuenta destino requerida");
-
-                    if (saldoActual < dto.MOV_Monto)
-                        throw new Exception("Saldo insuficiente");
-
-                    // Restar origen
-                    nuevoSaldo -= dto.MOV_Monto;
-
-                    // Sumar destino
-                    var saldoDestino = await cuentaRepo.ObtenerSaldoActual(dto.CUB_Cuenta_Destino.Value);
-                    await cuentaRepo.ActualizarSaldoActual(
-                        dto.CUB_Cuenta_Destino.Value,
-                        saldoDestino + dto.MOV_Monto
-                    );
-                    break;
-
-                case 4: // PAGO
-                    if (saldoActual < dto.MOV_Monto)
-                        throw new Exception("Saldo insuficiente");
-
-                    nuevoSaldo -= dto.MOV_Monto;
-                    break;
-
-                default:
-                    throw new Exception("Tipo de movimiento inválido");
-            }
-
-            // 🔥 actualizar saldo origen
-            await cuentaRepo.ActualizarSaldoActual(dto.CUB_Cuenta, nuevoSaldo);
-
-            dto.MOV_Saldo = nuevoSaldo;
-
-            // 🔥 guardar y devolver ID
-            return await movRepo.CrearMovimiento(dto);
+            return await repository.CrearConRecargo(dto);
         }
 
-        // 🔍 OBTENER POR ID
+        public async Task<IEnumerable<ResponseMovimientoDTO>> ObtenerTodos()
+        {
+            return await repository.ObtenerTodos();
+        }
+
         public async Task<ResponseMovimientoDTO?> ObtenerPorId(int id)
         {
-            if (id <= 0)
-                throw new InvalidOperationException("Id inválido");
-
-            return await movRepo.ObtenerPorId(id);
+            return await repository.ObtenerPorId(id);
         }
 
-        // 📄 OBTENER POR CUENTA
         public async Task<IEnumerable<ResponseMovimientoDTO>> ObtenerPorCuenta(int cuentaId)
         {
             if (cuentaId <= 0)
-                throw new InvalidOperationException("Cuenta inválida");
+                throw new Exception("La cuenta es obligatoria.");
 
-            return await movRepo.ObtenerPorCuenta(cuentaId);
+            return await repository.ObtenerPorCuenta(cuentaId);
+        }
+
+        public async Task Anular(int id)
+        {
+            if (id <= 0)
+                throw new Exception("El id del movimiento es inválido.");
+
+            await repository.AnularConRecargo(id);
+        }
+
+        private void ValidarDto(CreateMovimientoDTO dto)
+        {
+            if (dto.CUB_Cuenta <= 0)
+                throw new Exception("La cuenta es obligatoria.");
+
+            if (dto.TIM_Tipo_Movimiento <= 0)
+                throw new Exception("El tipo de movimiento es obligatorio.");
+
+            if (dto.MEM_Medio_Movimiento <= 0)
+                throw new Exception("El medio de movimiento es obligatorio.");
+
+            if (dto.ESM_Estado_Movimiento <= 0)
+                throw new Exception("El estado de movimiento es obligatorio.");
+
+            if (dto.MOV_Monto_Origen <= 0)
+                throw new Exception("El monto debe ser mayor a cero.");
+
+            if (string.IsNullOrWhiteSpace(dto.MOV_Descripcion))
+                throw new Exception("La descripción es obligatoria.");
+        }
+
+        private async Task ValidarCatalogos(CreateMovimientoDTO dto)
+        {
+            var cuentaExiste = await repository.ExisteCuentaActiva(dto.CUB_Cuenta);
+            if (!cuentaExiste)
+                throw new Exception("La cuenta bancaria no existe o está inactiva.");
+
+            if (dto.PER_Persona.HasValue)
+            {
+                var personaExiste = await repository.ExistePersonaActiva(dto.PER_Persona.Value);
+                if (!personaExiste)
+                    throw new Exception("La persona no existe o está inactiva.");
+            }
+
+            var tipoExiste = await repository.ExisteTipoMovimientoActivo(dto.TIM_Tipo_Movimiento);
+            if (!tipoExiste)
+                throw new Exception("El tipo de movimiento no existe o está inactivo.");
+
+            var medioExiste = await repository.ExisteMedioMovimientoActivo(dto.MEM_Medio_Movimiento);
+            if (!medioExiste)
+                throw new Exception("El medio de movimiento no existe o está inactivo.");
+
+            var estadoExiste = await repository.ExisteEstadoMovimientoActivo(dto.ESM_Estado_Movimiento);
+            if (!estadoExiste)
+                throw new Exception("El estado de movimiento no existe o está inactivo.");
         }
     }
 }

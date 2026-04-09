@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using GestionCuentasBancarias.Domain.DTOS.Cheque;
-using GestionCuentasBancarias.Domain.Entities;
+﻿using GestionCuentasBancarias.Domain.DTOS.Cheque;
 using GestionCuentasBancarias.Domain.Interfaces.Repositories;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
 
@@ -35,6 +30,14 @@ namespace GestionCuentasBancarias.Business.Services
 
         public async Task CrearCheque(CreateChequeDTO dto)
         {
+            string numeroReferencia = string.IsNullOrWhiteSpace(dto.MOV_Numero_Referencia)
+                ? $"CH-{dto.CHE_Numero_Cheque}"
+                : dto.MOV_Numero_Referencia.Trim();
+
+            string descripcionMovimiento = string.IsNullOrWhiteSpace(dto.MOV_Descripcion)
+                ? $"Emisión de cheque No. {dto.CHE_Numero_Cheque}"
+                : dto.MOV_Descripcion.Trim();
+
             var cheque = new CreateChequeDTO(
                 dto.CUB_Cuenta,
                 dto.PER_Persona,
@@ -45,8 +48,8 @@ namespace GestionCuentasBancarias.Business.Services
                 dto.CHE_Fecha_Emision,
                 dto.CHE_Fecha_Vencimiento,
                 dto.CHE_Concepto,
-                dto.MOV_Numero_Referencia,
-                dto.MOV_Descripcion,
+                numeroReferencia,
+                descripcionMovimiento,
                 dto.MOV_Monto
             );
 
