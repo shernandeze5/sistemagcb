@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GestionCuentasBancarias.Domain.DTOS
+namespace GestionCuentasBancarias.Domain.DTOS.Movimiento
 {
     namespace GestionCuentasBancarias.Domain.DTOS.Movimiento
     {

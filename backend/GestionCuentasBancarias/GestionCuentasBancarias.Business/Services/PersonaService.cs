@@ -136,4 +136,107 @@ public class PersonaService : IPersonaService
 
         return await repository.EliminarLogicoAsync(id);
     }
+
+    public async Task<bool> AgregarTelefonoAsync(int personaId, CreateTelefonoPersonaExistenteDTO dto)
+    {
+        if (personaId <= 0)
+            throw new InvalidOperationException("El id de persona es inválido.");
+
+        if (dto.TIT_Tipo_Telefono <= 0)
+            throw new InvalidOperationException("El tipo de teléfono es requerido.");
+
+        if (string.IsNullOrWhiteSpace(dto.TEP_Numero))
+            throw new InvalidOperationException("El número de teléfono es requerido.");
+
+        dto.TEP_Principal = string.IsNullOrWhiteSpace(dto.TEP_Principal) ? "N" : dto.TEP_Principal.ToUpper();
+        dto.TEP_Estado = string.IsNullOrWhiteSpace(dto.TEP_Estado) ? "A" : dto.TEP_Estado.ToUpper();
+
+        if (dto.TEP_Principal != "S" && dto.TEP_Principal != "N")
+            throw new InvalidOperationException("El valor de principal debe ser 'S' o 'N'.");
+
+        if (dto.TEP_Estado != "A" && dto.TEP_Estado != "I")
+            throw new InvalidOperationException("El estado debe ser 'A' o 'I'.");
+
+        return await repository.AgregarTelefonoAsync(personaId, dto);
+    }
+
+    public async Task<bool> AgregarDireccionAsync(int personaId, CreateDireccionPersonaExistenteDTO dto)
+    {
+        if (personaId <= 0)
+            throw new InvalidOperationException("El id de persona es inválido.");
+
+        if (dto.TDI_Tipo_Direccion <= 0)
+            throw new InvalidOperationException("El tipo de dirección es requerido.");
+
+        if (string.IsNullOrWhiteSpace(dto.DIR_Departamento))
+            throw new InvalidOperationException("El departamento es requerido.");
+
+        dto.DIR_Principal = string.IsNullOrWhiteSpace(dto.DIR_Principal) ? "N" : dto.DIR_Principal.ToUpper();
+
+        if (dto.DIR_Principal != "S" && dto.DIR_Principal != "N")
+            throw new InvalidOperationException("El valor de principal debe ser 'S' o 'N'.");
+
+        return await repository.AgregarDireccionAsync(personaId, dto);
+    }
+    public async Task<bool> ActualizarTelefonoAsync(int telefonoId, UpdateTelefonoPersonaDTO dto)
+    {
+        if (telefonoId <= 0)
+            throw new InvalidOperationException("El id del teléfono es inválido.");
+
+        if (dto.TIT_Tipo_Telefono <= 0)
+            throw new InvalidOperationException("El tipo de teléfono es requerido.");
+
+        if (string.IsNullOrWhiteSpace(dto.TEP_Numero))
+            throw new InvalidOperationException("El número de teléfono es requerido.");
+
+        dto.TEP_Principal = string.IsNullOrWhiteSpace(dto.TEP_Principal) ? "N" : dto.TEP_Principal.ToUpper();
+        dto.TEP_Estado = string.IsNullOrWhiteSpace(dto.TEP_Estado) ? "A" : dto.TEP_Estado.ToUpper();
+
+        if (dto.TEP_Principal != "S" && dto.TEP_Principal != "N")
+            throw new InvalidOperationException("El valor principal debe ser 'S' o 'N'.");
+
+        if (dto.TEP_Estado != "A" && dto.TEP_Estado != "I")
+            throw new InvalidOperationException("El estado debe ser 'A' o 'I'.");
+
+        return await repository.ActualizarTelefonoAsync(telefonoId, dto);
+    }
+
+    public async Task<bool> EliminarTelefonoLogicoAsync(int telefonoId)
+    {
+        if (telefonoId <= 0)
+            throw new InvalidOperationException("El id del teléfono es inválido.");
+
+        return await repository.EliminarTelefonoLogicoAsync(telefonoId);
+    }
+
+    public async Task<bool> ActualizarDireccionAsync(int direccionId, UpdateDireccionPersonaDTO dto)
+    {
+        if (direccionId <= 0)
+            throw new InvalidOperationException("El id de la dirección es inválido.");
+
+        if (dto.TDI_Tipo_Direccion <= 0)
+            throw new InvalidOperationException("El tipo de dirección es requerido.");
+
+        if (string.IsNullOrWhiteSpace(dto.DIR_Departamento))
+            throw new InvalidOperationException("El departamento es requerido.");
+
+        dto.DIR_Principal = string.IsNullOrWhiteSpace(dto.DIR_Principal) ? "N" : dto.DIR_Principal.ToUpper();
+        dto.DIR_Estado = string.IsNullOrWhiteSpace(dto.DIR_Estado) ? "A" : dto.DIR_Estado.ToUpper();
+
+        if (dto.DIR_Principal != "S" && dto.DIR_Principal != "N")
+            throw new InvalidOperationException("El valor principal debe ser 'S' o 'N'.");
+
+        if (dto.DIR_Estado != "A" && dto.DIR_Estado != "I")
+            throw new InvalidOperationException("El estado debe ser 'A' o 'I'.");
+
+        return await repository.ActualizarDireccionAsync(direccionId, dto);
+    }
+
+    public async Task<bool> EliminarDireccionLogicoAsync(int direccionId)
+    {
+        if (direccionId <= 0)
+            throw new InvalidOperationException("El id de la dirección es inválido.");
+
+        return await repository.EliminarDireccionLogicoAsync(direccionId);
+    }
 }
