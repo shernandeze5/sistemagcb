@@ -33,7 +33,7 @@ namespace GestionCuentasBancarias.Business.Services
             return repository.CrearEstadoCheque(dto);
         }
 
-        public Task<bool> ActualizarEstadoCheque(int id, UpdateEstadoChequeDTO dto)
+        public Task<bool> ActualizarEstadoCheque(int id, UpdateChequeDTO dto)
         {
             return repository.ActualizarEstadoCheque(id, dto);
         }

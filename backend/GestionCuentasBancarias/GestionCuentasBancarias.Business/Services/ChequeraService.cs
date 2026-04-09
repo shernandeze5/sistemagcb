@@ -69,7 +69,7 @@ namespace GestionCuentasBancarias.Business.Services
                 CHQ_Numero_Desde = dto.CHQ_Numero_Desde,
                 CHQ_Numero_Hasta = dto.CHQ_Numero_Hasta,
                 CHQ_Ultimo_Usado = 0,
-                CHQ_Estado = "Pendiente",
+                CHQ_Estado = "A",
                 CHQ_Fecha_Recepcion = dto.CHQ_Fecha_Recepcion,
                 CHQ_Fecha_Creacion = DateTime.Now
             };
@@ -91,7 +91,7 @@ namespace GestionCuentasBancarias.Business.Services
             existente.CHQ_Numero_Desde = dto.CHQ_Numero_Desde;
             existente.CHQ_Numero_Hasta = dto.CHQ_Numero_Hasta;
             existente.CHQ_Ultimo_Usado = dto.CHQ_Ultimo_Usado;
-            existente.CHQ_Estado = dto.CHQ_Estado.Trim();
+            existente.CHQ_Estado = dto.CHQ_Estado.Trim().ToUpper();
             existente.CHQ_Fecha_Recepcion = dto.CHQ_Fecha_Recepcion;
 
             return await _repository.ActualizarAsync(existente);
@@ -170,9 +170,10 @@ namespace GestionCuentasBancarias.Business.Services
             if (string.IsNullOrWhiteSpace(dto.CHQ_Estado))
                 throw new ArgumentException("El estado es obligatorio.");
 
-            var estadosValidos = new[] { "Pendiente", "Activa", "Agotada", "Anulada" };
-            if (!estadosValidos.Contains(dto.CHQ_Estado.Trim()))
-                throw new ArgumentException("El estado no es válido.");
+            var estado = dto.CHQ_Estado.Trim().ToUpper();
+
+            if (estado != "A" && estado != "I")
+                throw new ArgumentException("El estado no es válido. Solo se permite 'A' o 'I'.");
 
             if (dto.CHQ_Fecha_Recepcion == default)
                 throw new ArgumentException("La fecha de recepción es obligatoria.");

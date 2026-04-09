@@ -52,7 +52,7 @@ namespace GestionCuentasBancarias.Data.Repositories
                 new { Descripcion = dto.ESC_Descripcion });
         }
 
-        public async Task<bool> ActualizarEstadoCheque(int id, UpdateEstadoChequeDTO dto)
+        public async Task<bool> ActualizarEstadoCheque(int id, UpdateChequeDTO dto)
         {
             using var connection = new OracleConnection(connectionString);
 

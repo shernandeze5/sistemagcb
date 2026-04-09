@@ -12,7 +12,7 @@ namespace GestionCuentasBancarias.Domain.Interfaces.Repositories
         Task<IEnumerable<ResponseEstadoChequeDTO>> ObtenerEstadosCheque();
         Task<ResponseEstadoChequeDTO> ObtenerEstadoChequePorId(int id);
         Task<int> CrearEstadoCheque(CreateEstadoChequeDTO dto);
-        Task<bool> ActualizarEstadoCheque(int id, UpdateEstadoChequeDTO dto);
+        Task<bool> ActualizarEstadoCheque(int id, UpdateChequeDTO dto);
         Task<bool> EliminarEstadoCheque(int id);
 
         Task<bool> ReactivarEstadoCheque(int id);

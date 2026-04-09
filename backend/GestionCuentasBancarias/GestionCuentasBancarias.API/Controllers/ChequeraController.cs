@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GestionCuentasBancarias.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/chequera")]
     public class ChequeraController : ControllerBase
     {
         private readonly IChequeraService _service;
@@ -36,65 +36,45 @@ namespace GestionCuentasBancarias.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] CrearChequeraDTO dto)
         {
-            if (dto.CUB_Cuenta <= 0)
-                return BadRequest(new { mensaje = "La cuenta es obligatoria." });
+            try
+            {
+                var resultado = await _service.CrearAsync(dto);
 
-            if (string.IsNullOrWhiteSpace(dto.CHQ_Serie))
-                return BadRequest(new { mensaje = "La serie es obligatoria." });
+                if (!resultado)
+                    return BadRequest(new { mensaje = "No se pudo crear la chequera." });
 
-            if (dto.CHQ_Numero_Desde <= 0)
-                return BadRequest(new { mensaje = "El número desde debe ser mayor que cero." });
-
-            if (dto.CHQ_Numero_Hasta <= 0)
-                return BadRequest(new { mensaje = "El número hasta debe ser mayor que cero." });
-
-            if (dto.CHQ_Numero_Hasta < dto.CHQ_Numero_Desde)
-                return BadRequest(new { mensaje = "El número hasta no puede ser menor al número desde." });
-
-            if (dto.CHQ_Fecha_Recepcion == default)
-                return BadRequest(new { mensaje = "La fecha de recepción es obligatoria." });
-
-            var resultado = await _service.CrearAsync(dto);
-
-            if (!resultado)
-                return BadRequest(new { mensaje = "No se pudo crear la Chequera." });
-
-            return Ok(new { mensaje = "Chequera creada correctamente." });
+                return Ok(new { mensaje = "Chequera creada correctamente." });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { mensaje = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { mensaje = ex.Message });
+            }
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}/actualizar")]
         public async Task<IActionResult> Actualizar(int id, [FromBody] ActualizarChequeraDTO dto)
         {
-            if (dto.CUB_Cuenta <= 0)
-                return BadRequest(new { mensaje = "La cuenta es obligatoria." });
+            try
+            {
+                var resultado = await _service.ActualizarAsync(id, dto);
 
-            if (string.IsNullOrWhiteSpace(dto.CHQ_Serie))
-                return BadRequest(new { mensaje = "La serie es obligatoria." });
+                if (!resultado)
+                    return NotFound(new { mensaje = "No se pudo actualizar. Registro no encontrado." });
 
-            if (dto.CHQ_Numero_Desde <= 0)
-                return BadRequest(new { mensaje = "El número desde debe ser mayor que cero." });
-
-            if (dto.CHQ_Numero_Hasta <= 0)
-                return BadRequest(new { mensaje = "El número hasta debe ser mayor que cero." });
-
-            if (dto.CHQ_Numero_Hasta < dto.CHQ_Numero_Desde)
-                return BadRequest(new { mensaje = "El número hasta no puede ser menor al número desde." });
-
-            if (dto.CHQ_Ultimo_Usado < 0)
-                return BadRequest(new { mensaje = "El último usado no puede ser negativo." });
-
-            if (string.IsNullOrWhiteSpace(dto.CHQ_Estado))
-                return BadRequest(new { mensaje = "El estado es obligatorio." });
-
-            if (dto.CHQ_Fecha_Recepcion == default)
-                return BadRequest(new { mensaje = "La fecha de recepción es obligatoria." });
-
-            var resultado = await _service.ActualizarAsync(id, dto);
-
-            if (!resultado)
-                return NotFound(new { mensaje = "No se pudo actualizar. Registro no encontrado." });
-
-            return Ok(new { mensaje = "Chequera actualizada correctamente." });
+                return Ok(new { mensaje = "Chequera actualizada correctamente." });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { mensaje = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { mensaje = ex.Message });
+            }
         }
 
         [HttpDelete("{id}")]
@@ -105,7 +85,7 @@ namespace GestionCuentasBancarias.API.Controllers
             if (!resultado)
                 return NotFound(new { mensaje = "No se pudo eliminar. Registro no encontrado." });
 
-            return Ok(new { mensaje = "Chequera eliminada lógicamente." });
+            return Ok(new { mensaje = "Chequera desactivada correctamente." });
         }
 
         [HttpPatch("{id}/reactivar")]

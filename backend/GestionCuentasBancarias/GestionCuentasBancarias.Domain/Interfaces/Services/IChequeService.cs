@@ -9,10 +9,10 @@ namespace GestionCuentasBancarias.Domain.Interfaces.Services
 {
     public interface IChequeService
     {
-        Task<IEnumerable<ResponseChequeDTO>> ObtenerTodosAsync();
-        Task<ResponseChequeDTO?> ObtenerPorIdAsync(int id);
-        Task<bool> CrearAsync(CrearChequeDTO dto);
-        Task<bool> ActualizarAsync(int id, ActualizarChequeDTO dto);
-        Task<bool> EliminarAsync(int id);
+        Task<IEnumerable<ChequeResponseDTO>> ObtenerCheques();
+        Task<IEnumerable<ChequeResponseDTO>> ObtenerChequesPorCuenta(int cuentaId);
+        Task<ChequeResponseDTO?> ObtenerChequePorId(int id);
+        Task CrearCheque(CreateChequeDTO dto);
+        Task<bool> CambiarEstadoCheque(int chequeId, UpdateDTOCheque dto);
     }
 }

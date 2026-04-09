@@ -5,92 +5,65 @@ using Microsoft.AspNetCore.Mvc;
 namespace GestionCuentasBancarias.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/cheques")]
     public class ChequeController : ControllerBase
     {
-        private readonly IChequeService _service;
+        private readonly IChequeService service;
 
         public ChequeController(IChequeService service)
         {
-            _service = service;
+            this.service = service;
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObtenerTodos()
+        public async Task<IActionResult> ObtenerCheques()
         {
-            var data = await _service.ObtenerTodosAsync();
-            return Ok(data);
+            var cheques = await service.ObtenerCheques();
+            return Ok(cheques);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> ObtenerPorId(int id)
+        public async Task<IActionResult> ObtenerCheque(int id)
         {
-            var data = await _service.ObtenerPorIdAsync(id);
+            var cheque = await service.ObtenerChequePorId(id);
+            if (cheque == null) return NotFound();
+            return Ok(cheque);
+        }
 
-            if (data == null)
-                return NotFound(new { mensaje = "Cheque no encontrado." });
-
-            return Ok(data);
+        [HttpGet("cuenta/{cuentaId}")]
+        public async Task<IActionResult> ObtenerChequesPorCuenta(int cuentaId)
+        {
+            var cheques = await service.ObtenerChequesPorCuenta(cuentaId);
+            return Ok(cheques);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Crear([FromBody] CrearChequeDTO dto)
+        public async Task<IActionResult> CrearCheque([FromBody] CreateChequeDTO dto)
         {
-            if (dto.MOV_Movimiento <= 0)
-                return BadRequest(new { mensaje = "El movimiento es obligatorio." });
-
-            if (!dto.CHQ_Chequera.HasValue || dto.CHQ_Chequera.Value <= 0)
-                return BadRequest(new { mensaje = "La chequera es obligatoria." });
-
-            if (string.IsNullOrWhiteSpace(dto.CHE_Numero_Cheque))
-                return BadRequest(new { mensaje = "El número de cheque es obligatorio." });
-
-            if (dto.ESC_Estado_Cheque <= 0)
-                return BadRequest(new { mensaje = "El estado del cheque es obligatorio." });
-
-            var resultado = await _service.CrearAsync(dto);
-
-            if (!resultado)
-                return BadRequest(new
-                {
-                    mensaje = "No se pudo crear el cheque. Verifica que la chequera exista, esté activa y tenga cheques disponibles."
-                });
-
-            return Ok(new { mensaje = "Cheque creado correctamente." });
+            try
+            {
+                await service.CrearCheque(dto);
+                return Ok(new { mensaje = "Cheque creado correctamente." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { mensaje = ex.Message });
+            }
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Actualizar(int id, [FromBody] ActualizarChequeDTO dto)
+        [HttpPatch("{id}/estado")]
+        public async Task<IActionResult> CambiarEstadoCheque(int id, [FromBody] UpdateDTOCheque dto)
         {
-            if (dto.MOV_Movimiento <= 0)
-                return BadRequest(new { mensaje = "El movimiento es obligatorio." });
-
-            if (!dto.CHQ_Chequera.HasValue || dto.CHQ_Chequera.Value <= 0)
-                return BadRequest(new { mensaje = "La chequera es obligatoria." });
-
-            if (string.IsNullOrWhiteSpace(dto.CHE_Numero_Cheque))
-                return BadRequest(new { mensaje = "El número de cheque es obligatorio." });
-
-            if (dto.ESC_Estado_Cheque <= 0)
-                return BadRequest(new { mensaje = "El estado del cheque es obligatorio." });
-
-            var resultado = await _service.ActualizarAsync(id, dto);
-
-            if (!resultado)
-                return NotFound(new { mensaje = "No se pudo actualizar. Registro no encontrado." });
-
-            return Ok(new { mensaje = "Cheque actualizado correctamente." });
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Eliminar(int id)
-        {
-            var resultado = await _service.EliminarAsync(id);
-
-            if (!resultado)
-                return NotFound(new { mensaje = "No se pudo eliminar. Registro no encontrado." });
-
-            return Ok(new { mensaje = "Cheque eliminado correctamente." });
+            try
+            {
+                var actualizado = await service.CambiarEstadoCheque(id, dto);
+                if (!actualizado) return NotFound();
+                return Ok(new { mensaje = "Estado del cheque actualizado correctamente." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { mensaje = ex.Message });
+            }
         }
     }
 }

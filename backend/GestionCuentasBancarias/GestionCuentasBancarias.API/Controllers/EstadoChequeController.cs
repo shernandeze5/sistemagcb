@@ -45,7 +45,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> ActualizarEstadoCheque(int id, [FromBody] UpdateEstadoChequeDTO dto)
+        public async Task<IActionResult> ActualizarEstadoCheque(int id, [FromBody] UpdateChequeDTO dto)
         {
             try
             {

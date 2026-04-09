@@ -11,148 +11,81 @@ namespace GestionCuentasBancarias.Business.Services
 {
     public class ChequeService : IChequeService
     {
-        private readonly IChequeRepository _repository;
-        private readonly IChequeraRepository _chequeraRepository;
+        private readonly IChequeRepository repository;
 
-        public ChequeService(
-            IChequeRepository repository,
-            IChequeraRepository chequeraRepository)
+        public ChequeService(IChequeRepository repository)
         {
-            _repository = repository;
-            _chequeraRepository = chequeraRepository;
+            this.repository = repository;
         }
 
-        public async Task<IEnumerable<ResponseChequeDTO>> ObtenerTodosAsync()
+        public async Task<IEnumerable<ChequeResponseDTO>> ObtenerCheques()
         {
-            var cheques = await _repository.ObtenerTodosAsync();
-
-            return cheques.Select(c => new ResponseChequeDTO
-            {
-                CHE_Cheque = c.CHE_Cheque,
-                MOV_Movimiento = c.MOV_Movimiento,
-                CHE_Numero_Cheque = c.CHE_Numero_Cheque,
-                CHE_Monto_Letras = c.CHE_Monto_Letras,
-                CHE_Fecha_Emision = c.CHE_Fecha_Emision,
-                CHE_Fecha_Cobro = c.CHE_Fecha_Cobro,
-                CHE_Fecha_Vencimiento = c.CHE_Fecha_Vencimiento,
-                ESC_Estado_Cheque = c.ESC_Estado_Cheque,
-                CHE_Fecha_Creacion = c.CHE_Fecha_Creacion,
-                CHQ_Chequera = c.CHQ_Chequera,
-                CHE_Beneficiario = c.CHE_Beneficiario,
-                CHE_Concepto = c.CHE_Concepto
-            });
+            return await repository.ObtenerChequesAsync();
         }
 
-        public async Task<ResponseChequeDTO?> ObtenerPorIdAsync(int id)
+        public async Task<IEnumerable<ChequeResponseDTO>> ObtenerChequesPorCuenta(int cuentaId)
         {
-            var cheque = await _repository.ObtenerPorIdAsync(id);
-
-            if (cheque == null)
-                return null;
-
-            return new ResponseChequeDTO
-            {
-                CHE_Cheque = cheque.CHE_Cheque,
-                MOV_Movimiento = cheque.MOV_Movimiento,
-                CHE_Numero_Cheque = cheque.CHE_Numero_Cheque,
-                CHE_Monto_Letras = cheque.CHE_Monto_Letras,
-                CHE_Fecha_Emision = cheque.CHE_Fecha_Emision,
-                CHE_Fecha_Cobro = cheque.CHE_Fecha_Cobro,
-                CHE_Fecha_Vencimiento = cheque.CHE_Fecha_Vencimiento,
-                ESC_Estado_Cheque = cheque.ESC_Estado_Cheque,
-                CHE_Fecha_Creacion = cheque.CHE_Fecha_Creacion,
-                CHQ_Chequera = cheque.CHQ_Chequera,
-                CHE_Beneficiario = cheque.CHE_Beneficiario,
-                CHE_Concepto = cheque.CHE_Concepto
-            };
+            return await repository.ObtenerChequesPorCuentaAsync(cuentaId);
         }
 
-        public async Task<bool> CrearAsync(CrearChequeDTO dto)
+        public async Task<ChequeResponseDTO?> ObtenerChequePorId(int id)
         {
-            if (!dto.CHQ_Chequera.HasValue || dto.CHQ_Chequera.Value <= 0)
-                return false;
-
-            var chequera = await _chequeraRepository.ObtenerPorIdAsync(dto.CHQ_Chequera.Value);
-
-            if (chequera == null)
-                return false;
-
-            if (chequera.CHQ_Estado != "Activa")
-                return false;
-
-            int siguienteNumero;
-
-            if (chequera.CHQ_Ultimo_Usado <= 0)
-                siguienteNumero = chequera.CHQ_Numero_Desde;
-            else
-                siguienteNumero = chequera.CHQ_Ultimo_Usado + 1;
-
-            if (siguienteNumero > chequera.CHQ_Numero_Hasta)
-            {
-                chequera.CHQ_Estado = "Agotada";
-                await _chequeraRepository.ActualizarAsync(chequera);
-                return false;
-            }
-
-            var entidad = new Cheque
-            {
-                MOV_Movimiento = dto.MOV_Movimiento,
-                CHE_Numero_Cheque = dto.CHE_Numero_Cheque,
-                CHE_Monto_Letras = dto.CHE_Monto_Letras,
-                CHE_Fecha_Emision = dto.CHE_Fecha_Emision,
-                CHE_Fecha_Cobro = dto.CHE_Fecha_Cobro,
-                CHE_Fecha_Vencimiento = dto.CHE_Fecha_Vencimiento,
-                ESC_Estado_Cheque = dto.ESC_Estado_Cheque,
-                CHE_Fecha_Creacion = DateTime.Now,
-                CHQ_Chequera = dto.CHQ_Chequera,
-                CHE_Beneficiario = dto.CHE_Beneficiario,
-                CHE_Concepto = dto.CHE_Concepto
-            };
-
-            var creado = await _repository.CrearAsync(entidad);
-
-            if (!creado)
-                return false;
-
-            chequera.CHQ_Ultimo_Usado = siguienteNumero;
-
-            if (chequera.CHQ_Ultimo_Usado >= chequera.CHQ_Numero_Hasta)
-                chequera.CHQ_Estado = "Agotada";
-
-            var actualizada = await _chequeraRepository.ActualizarAsync(chequera);
-
-            return actualizada;
+            return await repository.ObtenerChequePorIdAsync(id);
         }
 
-        public async Task<bool> ActualizarAsync(int id, ActualizarChequeDTO dto)
+        public async Task CrearCheque(CreateChequeDTO dto)
         {
-            var existente = await _repository.ObtenerPorIdAsync(id);
+            var cheque = new CreateChequeDTO(
+                dto.CUB_Cuenta,
+                dto.PER_Persona,
+                dto.CHQ_Chequera,
+                dto.ESC_Estado_Cheque,
+                dto.CHE_Numero_Cheque,
+                dto.CHE_Monto_Letras,
+                dto.CHE_Fecha_Emision,
+                dto.CHE_Fecha_Vencimiento,
+                dto.CHE_Concepto,
+                dto.MOV_Numero_Referencia,
+                dto.MOV_Descripcion,
+                dto.MOV_Monto
+            );
 
-            if (existente == null)
-                return false;
+            if (cheque.CUB_Cuenta <= 0)
+                throw new InvalidOperationException("La cuenta es obligatoria.");
 
-            existente.MOV_Movimiento = dto.MOV_Movimiento;
-            existente.CHE_Numero_Cheque = dto.CHE_Numero_Cheque;
-            existente.CHE_Monto_Letras = dto.CHE_Monto_Letras;
-            existente.CHE_Fecha_Emision = dto.CHE_Fecha_Emision;
-            existente.CHE_Fecha_Cobro = dto.CHE_Fecha_Cobro;
-            existente.CHE_Fecha_Vencimiento = dto.CHE_Fecha_Vencimiento;
-            existente.ESC_Estado_Cheque = dto.ESC_Estado_Cheque;
-            existente.CHQ_Chequera = dto.CHQ_Chequera;
-            existente.CHE_Beneficiario = dto.CHE_Beneficiario;
-            existente.CHE_Concepto = dto.CHE_Concepto;
+            if (cheque.PER_Persona <= 0)
+                throw new InvalidOperationException("La persona beneficiaria es obligatoria.");
 
-            return await _repository.ActualizarAsync(existente);
+            if (cheque.CHQ_Chequera <= 0)
+                throw new InvalidOperationException("La chequera es obligatoria.");
+
+            if (cheque.ESC_Estado_Cheque <= 0)
+                throw new InvalidOperationException("El estado del cheque es obligatorio.");
+
+            if (string.IsNullOrWhiteSpace(cheque.CHE_Numero_Cheque))
+                throw new InvalidOperationException("El número de cheque es obligatorio.");
+
+            if (cheque.MOV_Monto <= 0)
+                throw new InvalidOperationException("El monto debe ser mayor a cero.");
+
+            if (cheque.CHE_Fecha_Vencimiento.HasValue &&
+                cheque.CHE_Fecha_Vencimiento.Value.Date < cheque.CHE_Fecha_Emision.Date)
+                throw new InvalidOperationException("La fecha de vencimiento no puede ser menor a la fecha de emisión.");
+
+            await repository.CrearChequeAsync(cheque);
         }
 
-        public async Task<bool> EliminarAsync(int id)
+        public async Task<bool> CambiarEstadoCheque(int chequeId, UpdateDTOCheque dto)
         {
-            var existente = await _repository.ObtenerPorIdAsync(id);
+            var estadoDto = new UpdateDTOCheque(dto.ESC_Estado_Cheque);
 
-            if (existente == null)
-                return false;
+            if (chequeId <= 0)
+                throw new InvalidOperationException("El id del cheque es inválido.");
 
-            return await _repository.EliminarAsync(id);
+            if (estadoDto.ESC_Estado_Cheque <= 0)
+                throw new InvalidOperationException("Debe enviar el id del estado del cheque.");
+
+            return await repository.CambiarEstadoChequeAsync(chequeId, estadoDto);
         }
     }
 }

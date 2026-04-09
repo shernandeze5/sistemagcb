@@ -13,7 +13,7 @@ namespace GestionCuentasBancarias.Domain.DTOS.Chequera
         public int CHQ_Numero_Desde { get; set; }
         public int CHQ_Numero_Hasta { get; set; }
         public int CHQ_Ultimo_Usado { get; set; }
-        public string CHQ_Estado { get; set; } = string.Empty;
+        public string CHQ_Estado { get; set; } = string.Empty; // A / I
         public DateTime CHQ_Fecha_Recepcion { get; set; }
     }
 }
