@@ -16,5 +16,7 @@ namespace GestionCuentasBancarias.Domain.Interfaces.Repositories
         Task<bool> ActualizarCuenta(int id, UpdateCuentaBancariaDTO dto);
         Task<bool> EliminarCuenta(int id);
         Task<bool> ReactivarCuenta(int id);
+        Task<decimal> ObtenerSaldoActual(int cuentaId);
+        Task ActualizarSaldoActual(int cuentaId, decimal nuevoSaldo);
     }
 }

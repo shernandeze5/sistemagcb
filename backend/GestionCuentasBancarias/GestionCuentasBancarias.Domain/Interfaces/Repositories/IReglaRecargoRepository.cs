@@ -9,12 +9,10 @@ namespace GestionCuentasBancarias.Domain.Interfaces.Repositories
 {
     public interface IReglaRecargoRepository
     {
-        Task<List<ResponseReglaRecargoDTO>> ObtenerReglas();
-        Task<List<ResponseReglaRecargoDTO>> ObtenerReglasPorCuenta(int cuentaId);
-        Task<ResponseReglaRecargoDTO> ObtenerReglaPorId(int id);
-        Task CrearRegla(CreateReglaRecargoDTO dto);
-        Task<bool> ActualizarRegla(int id, UpdateReglaRecargoDTO dto);
-        Task<bool> EliminarRegla(int id);
-        Task<bool> ReactivarRegla(int id);
+        Task<int> Crear(CreateReglaRecargoDTO dto);
+        Task<IEnumerable<ResponseReglaRecargoDTO>> ObtenerPorCuenta(int cuentaId);
+        Task Actualizar(int id, UpdateReglaRecargoDTO dto);
+        Task Eliminar(int id);
+        Task AplicarRecargoAutomatico(int cuentaId);
     }
 }

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GestionCuentasBancarias.API.Controllers
 {
     [ApiController]
-    [Route("api/interes-frecuencias")]
+    [Route("api/interes-frecuencia")]
     public class InteresFrecuenciaController : ControllerBase
     {
         private readonly IinteresFrecuenciaService service;

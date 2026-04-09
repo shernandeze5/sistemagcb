@@ -12,96 +12,90 @@ namespace GestionCuentasBancarias.Business.Services
 {
     public class MovimientoService : IMovimientoService
     {
-        private readonly IMovimientoRepository _repository;
+        private readonly IMovimientoRepository movRepo;
+        private readonly ICuentaBancariaRepository cuentaRepo;
 
-        public MovimientoService(IMovimientoRepository repository)
+        public MovimientoService(
+            IMovimientoRepository movRepo,
+            ICuentaBancariaRepository cuentaRepo)
         {
-            _repository = repository;
+            this.movRepo = movRepo;
+            this.cuentaRepo = cuentaRepo;
         }
 
-        public async Task<IEnumerable<MovimientoDTO>> ObtenerTodosAsync()
+        // 🔥 CREAR MOVIMIENTO (CORREGIDO → DEVUELVE ID)
+        public async Task<int> CrearMovimiento(CreateMovimientoDTO dto)
         {
-            var movimientos = await _repository.ObtenerTodosAsync();
+            var saldoActual = await cuentaRepo.ObtenerSaldoActual(dto.CUB_Cuenta);
+            decimal nuevoSaldo = saldoActual;
 
-            return movimientos.Select(m => new MovimientoDTO
+            switch (dto.TIM_Tipo_Movimiento)
             {
-                MOV_Movimiento = m.MOV_Movimiento,
-                CUB_Cuenta = m.CUB_Cuenta,
-                PER_Persona = m.PER_Persona,
-                TIM_Tipo_Movimiento = m.TIM_Tipo_Movimiento,
-                MEM_Medio_Movimiento = m.MEM_Medio_Movimiento,
-                ESM_Estado_Movimiento = m.ESM_Estado_Movimiento,
-                MOV_Fecha = m.MOV_Fecha,
-                MOV_Numero_Referencia = m.MOV_Numero_Referencia,
-                MOV_Descripcion = m.MOV_Descripcion,
-                MOV_Monto = m.MOV_Monto,
-                MOV_Saldo = m.MOV_Saldo
-            });
+                case 1: // DEPÓSITO
+                    nuevoSaldo += dto.MOV_Monto;
+                    break;
+
+                case 2: // RETIRO
+                    if (saldoActual < dto.MOV_Monto)
+                        throw new Exception("Saldo insuficiente");
+
+                    nuevoSaldo -= dto.MOV_Monto;
+                    break;
+
+                case 3: // TRANSFERENCIA
+                    if (dto.CUB_Cuenta_Destino == null)
+                        throw new Exception("Cuenta destino requerida");
+
+                    if (saldoActual < dto.MOV_Monto)
+                        throw new Exception("Saldo insuficiente");
+
+                    // Restar origen
+                    nuevoSaldo -= dto.MOV_Monto;
+
+                    // Sumar destino
+                    var saldoDestino = await cuentaRepo.ObtenerSaldoActual(dto.CUB_Cuenta_Destino.Value);
+                    await cuentaRepo.ActualizarSaldoActual(
+                        dto.CUB_Cuenta_Destino.Value,
+                        saldoDestino + dto.MOV_Monto
+                    );
+                    break;
+
+                case 4: // PAGO
+                    if (saldoActual < dto.MOV_Monto)
+                        throw new Exception("Saldo insuficiente");
+
+                    nuevoSaldo -= dto.MOV_Monto;
+                    break;
+
+                default:
+                    throw new Exception("Tipo de movimiento inválido");
+            }
+
+            // 🔥 actualizar saldo origen
+            await cuentaRepo.ActualizarSaldoActual(dto.CUB_Cuenta, nuevoSaldo);
+
+            dto.MOV_Saldo = nuevoSaldo;
+
+            // 🔥 guardar y devolver ID
+            return await movRepo.CrearMovimiento(dto);
         }
 
-        public async Task<MovimientoDTO?> ObtenerPorIdAsync(int id)
+        // 🔍 OBTENER POR ID
+        public async Task<ResponseMovimientoDTO?> ObtenerPorId(int id)
         {
-            var movimiento = await _repository.ObtenerPorIdAsync(id);
+            if (id <= 0)
+                throw new InvalidOperationException("Id inválido");
 
-            if (movimiento == null)
-                return null;
-
-            return new MovimientoDTO
-            {
-                MOV_Movimiento = movimiento.MOV_Movimiento,
-                CUB_Cuenta = movimiento.CUB_Cuenta,
-                PER_Persona = movimiento.PER_Persona,
-                TIM_Tipo_Movimiento = movimiento.TIM_Tipo_Movimiento,
-                MEM_Medio_Movimiento = movimiento.MEM_Medio_Movimiento,
-                ESM_Estado_Movimiento = movimiento.ESM_Estado_Movimiento,
-                MOV_Fecha = movimiento.MOV_Fecha,
-                MOV_Numero_Referencia = movimiento.MOV_Numero_Referencia,
-                MOV_Descripcion = movimiento.MOV_Descripcion,
-                MOV_Monto = movimiento.MOV_Monto,
-                MOV_Saldo = movimiento.MOV_Saldo
-            };
+            return await movRepo.ObtenerPorId(id);
         }
 
-        public async Task<bool> CrearAsync(CrearMovimientoDTO dto)
+        // 📄 OBTENER POR CUENTA
+        public async Task<IEnumerable<ResponseMovimientoDTO>> ObtenerPorCuenta(int cuentaId)
         {
-            var entidad = new Movimiento
-            {
-                CUB_Cuenta = dto.CUB_Cuenta,
-                PER_Persona = dto.PER_Persona,
-                TIM_Tipo_Movimiento = dto.TIM_Tipo_Movimiento,
-                MEM_Medio_Movimiento = dto.MEM_Medio_Movimiento,
-                ESM_Estado_Movimiento = dto.ESM_Estado_Movimiento,
-                MOV_Fecha = DateTime.Now,
-                MOV_Numero_Referencia = dto.MOV_Numero_Referencia,
-                MOV_Descripcion = dto.MOV_Descripcion,
-                MOV_Monto = dto.MOV_Monto,
-                MOV_Saldo = 0
-            };
+            if (cuentaId <= 0)
+                throw new InvalidOperationException("Cuenta inválida");
 
-            return await _repository.CrearAsync(entidad);
-        }
-
-        public async Task<bool> ActualizarAsync(int id, ActualizarMovimientoDTO dto)
-        {
-            var existente = await _repository.ObtenerPorIdAsync(id);
-
-            if (existente == null)
-                return false;
-
-            existente.MOV_Descripcion = dto.MOV_Descripcion;
-            existente.ESM_Estado_Movimiento = dto.ESM_Estado_Movimiento;
-
-            return await _repository.ActualizarAsync(existente);
-        }
-
-        public async Task<bool> EliminarLogicoAsync(int id)
-        {
-            var existente = await _repository.ObtenerPorIdAsync(id);
-
-            if (existente == null)
-                return false;
-
-            return await _repository.EliminarLogicoAsync(id);
+            return await movRepo.ObtenerPorCuenta(cuentaId);
         }
     }
 }

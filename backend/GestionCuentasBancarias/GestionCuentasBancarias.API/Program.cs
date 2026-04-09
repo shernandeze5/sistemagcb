@@ -53,6 +53,7 @@ builder.Services.AddScoped<ITipoCuentaService, TipoCuentaService>();
 
 builder.Services.AddScoped<ITipoPersonaRepository, TipoPersonaRepository>();
 builder.Services.AddScoped<ITipoPersonaService, TipoPersonaService >();
+
 builder.Services.AddScoped<ITipoTelefonoRepository, TipoTelefonoRepository>();
 builder.Services.AddScoped<ITipoTelefonoService, TipoTelefonoService>();
 
@@ -101,6 +102,18 @@ builder.Services.AddScoped<ICuentaBancariaService, CuentaBancariaService>();
 builder.Services.AddScoped<IChequeRepository, ChequeRepository>();
 builder.Services.AddScoped<IChequeService, ChequeService>();
 
+builder.Services.AddScoped<IPersonaRepository, PersonaRepository>();
+builder.Services.AddScoped<IPersonaService, PersonaService>();
+
+builder.Services.AddScoped<ITelefonoPersonaRepository, TelefonoPersonaRepository>();
+builder.Services.AddScoped<ITelefonoPersonaService, TelefonoPersonaService>();
+
+builder.Services.AddScoped<IDireccionPersonaRepository, DireccionPersonaRepository>();
+builder.Services.AddScoped<IDireccionPersonaService, DireccionPersonaService>();
+
+builder.Services.AddScoped<IAplicacionInteresRepository, AplicacionInteresRepository>();
+builder.Services.AddScoped<IAplicacionInteresService, AplicacionInteresService>();
+
 
 var app = builder.Build();
 
@@ -121,5 +134,11 @@ app.UseCors("AllowReactApp");
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var service = scope.ServiceProvider.GetRequiredService<IAplicacionInteresService>();
+    await service.AplicarInteresesAutomaticos();
+}
 
 app.Run();

@@ -12,5 +12,6 @@ namespace GestionCuentasBancarias.Domain.Entities
         public string INF_Descripcion { get; set; } = string.Empty;
         public string INF_Estado { get; set; } = "A";
         public DateTime INF_Fecha_Creacion { get; set; } = DateTime.Now;
+
     }
 }
