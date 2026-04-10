@@ -169,7 +169,13 @@ namespace GestionCuentasBancarias.Data.Repositories
 
             try
             {
-                await ValidarNumeroChequeDuplicadoAsync(connection, dto.CHE_Numero_Cheque, transaction);
+                await ValidarNumeroChequeDuplicadoAsync(
+                    connection,
+                    dto.CHQ_Chequera,
+                    dto.CHE_Numero_Cheque,
+                    transaction
+                );
+
                 await ValidarEstadoChequeAsync(connection, dto.ESC_Estado_Cheque, transaction);
 
                 int estadoMovimientoActivoId = await ObtenerEstadoMovimientoIdAsync(connection, "Activo", transaction);
@@ -378,6 +384,7 @@ namespace GestionCuentasBancarias.Data.Repositories
                     SELECT
                         C.CHE_Cheque,
                         C.ESC_Estado_Cheque,
+                        C.CHE_Fecha_Cobro,
                         C.MOV_Movimiento,
                         M.CUB_Cuenta,
                         M.MOV_Monto
@@ -396,11 +403,16 @@ namespace GestionCuentasBancarias.Data.Repositories
                 decimal monto = Convert.ToDecimal(chequeInfo.MOV_MONTO);
 
                 int estadoCanceladoId = await ObtenerEstadoChequeIdPorDescripcionAsync(connection, "Cancelado", transaction);
-                int estadoDepositadoId = await ObtenerEstadoChequeIdPorDescripcionAsync(connection, "Depositado", transaction);
-                int estadoMovimientoAnuladoId = await ObtenerEstadoMovimientoIdAsync(connection, "Anulado", transaction);
+                int estadoDepositadoId = await ObtenerEstadoChequeIdPorDescripcionAsync(connection, "Cobrado", transaction);
 
                 if (estadoActualId == estadoCanceladoId)
                     throw new InvalidOperationException("No se puede cambiar el estado de un cheque cancelado.");
+
+                if (estadoActualId == estadoDepositadoId && dto.ESC_Estado_Cheque != estadoDepositadoId)
+                    throw new InvalidOperationException("No se puede cambiar el estado de un cheque depositado.");
+
+                if (estadoActualId == dto.ESC_Estado_Cheque)
+                    throw new InvalidOperationException("El cheque ya tiene ese estado.");
 
                 if (dto.ESC_Estado_Cheque == estadoDepositadoId)
                 {
@@ -421,13 +433,18 @@ namespace GestionCuentasBancarias.Data.Repositories
 
                 if (dto.ESC_Estado_Cheque == estadoCanceladoId)
                 {
-                    var saldoActual = await connection.ExecuteScalarAsync<decimal>(@"
+                    int estadoMovimientoAnuladoId = await ObtenerEstadoMovimientoIdAsync(connection, "Anulado", transaction);
+
+                    var saldoActual = await connection.ExecuteScalarAsync<decimal?>(@"
                         SELECT CUB_Saldo_Actual
                         FROM GCB_CUENTA_BANCARIA
                         WHERE CUB_Cuenta = :CUB_Cuenta",
                         new { CUB_Cuenta = cuentaId }, transaction);
 
-                    decimal nuevoSaldo = saldoActual + monto;
+                    if (saldoActual == null)
+                        throw new InvalidOperationException("La cuenta bancaria asociada al cheque no existe.");
+
+                    decimal nuevoSaldo = saldoActual.Value + monto;
 
                     await connection.ExecuteAsync(@"
                         UPDATE GCB_CHEQUE
@@ -483,16 +500,26 @@ namespace GestionCuentasBancarias.Data.Repositories
             }
         }
 
-        private async Task ValidarNumeroChequeDuplicadoAsync(IDbConnection connection, string numeroCheque, IDbTransaction transaction)
+        private async Task ValidarNumeroChequeDuplicadoAsync(
+            IDbConnection connection,
+            int chqChequera,
+            string numeroCheque,
+            IDbTransaction transaction)
         {
             var existe = await connection.ExecuteScalarAsync<int>(@"
                 SELECT COUNT(1)
                 FROM GCB_CHEQUE
-                WHERE UPPER(TRIM(CHE_Numero_Cheque)) = UPPER(TRIM(:NumeroCheque))",
-                new { NumeroCheque = numeroCheque }, transaction);
+                WHERE CHQ_Chequera = :CHQ_Chequera
+                  AND UPPER(TRIM(CHE_Numero_Cheque)) = UPPER(TRIM(:NumeroCheque))",
+                new
+                {
+                    CHQ_Chequera = chqChequera,
+                    NumeroCheque = numeroCheque
+                },
+                transaction);
 
             if (existe > 0)
-                throw new InvalidOperationException("Ya existe un cheque con ese número.");
+                throw new InvalidOperationException("Ya existe un cheque con ese número en la chequera seleccionada.");
         }
 
         private async Task ValidarEstadoChequeAsync(IDbConnection connection, int estadoId, IDbTransaction transaction)
