@@ -94,10 +94,15 @@ namespace GestionCuentasBancarias.Data.Repositories
             using var connection = GetConnection();
 
             const string sql = @"
-                SELECT NVL(MAX(MOV_Saldo), 0)
-                FROM GCB_MOVIMIENTO
-                WHERE CUB_Cuenta = :Cuenta
-                  AND TRUNC(MOV_Fecha) <= :FechaCorte";
+                SELECT NVL(x.MOV_Saldo, 0)
+                FROM (
+                    SELECT MOV_Saldo
+                    FROM GCB_MOVIMIENTO
+                    WHERE CUB_Cuenta = :Cuenta
+                      AND TRUNC(MOV_Fecha) <= :FechaCorte
+                    ORDER BY MOV_Fecha DESC, MOV_Movimiento DESC
+                ) x
+                WHERE ROWNUM = 1";
 
             return await connection.ExecuteScalarAsync<decimal>(sql, new
             {

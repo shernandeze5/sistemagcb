@@ -297,20 +297,22 @@ namespace GestionCuentasBancarias.Business.Services
 
         public async Task RecalcularEstado(int conciliacionId)
         {
+            if (conciliacionId <= 0)
+                throw new InvalidOperationException("La conciliación es inválida.");
+
             var cabecera = await ObtenerPorId(conciliacionId);
             if (cabecera == null)
                 throw new InvalidOperationException("Conciliación no encontrada.");
 
-            bool listaParaCerrar =
-                cabecera.PendientesEnLibros == 0 &&
-                cabecera.PendientesEnBanco == 0 &&
-                cabecera.DiferenciaMonto == 0 &&
-                cabecera.DiferenciaFecha == 0 &&
-                Math.Abs(cabecera.SaldoBancoAjustado - cabecera.SaldoLibrosAjustado) <= 0.01m;
+            bool tienePendientesReales =
+                cabecera.PendientesEnLibros > 0 ||
+                cabecera.PendientesEnBanco > 0 ||
+                cabecera.DiferenciaMonto > 0 ||
+                cabecera.DiferenciaFecha > 0;
 
-            int estadoId = listaParaCerrar
-                ? await repository.ObtenerEstadoConciliacionId("Conciliada")
-                : await repository.ObtenerEstadoConciliacionId("Con diferencias");
+            int estadoId = tienePendientesReales
+                ? await repository.ObtenerEstadoConciliacionId("Con diferencias")
+                : await repository.ObtenerEstadoConciliacionId("Conciliada");
 
             await repository.ActualizarEstadoConciliacion(conciliacionId, estadoId);
         }
@@ -324,14 +326,13 @@ namespace GestionCuentasBancarias.Business.Services
             if (cabecera == null)
                 throw new InvalidOperationException("Conciliación no encontrada.");
 
-            bool listaParaCerrar =
-                cabecera.PendientesEnLibros == 0 &&
-                cabecera.PendientesEnBanco == 0 &&
-                cabecera.DiferenciaMonto == 0 &&
-                cabecera.DiferenciaFecha == 0 &&
-                Math.Abs(cabecera.SaldoBancoAjustado - cabecera.SaldoLibrosAjustado) <= 0.01m;
+            bool tienePendientesReales =
+                cabecera.PendientesEnLibros > 0 ||
+                cabecera.PendientesEnBanco > 0 ||
+                cabecera.DiferenciaMonto > 0 ||
+                cabecera.DiferenciaFecha > 0;
 
-            if (!listaParaCerrar)
+            if (tienePendientesReales)
                 throw new InvalidOperationException("La conciliación aún tiene diferencias pendientes y no puede cerrarse.");
 
             int estadoCerradaId = await repository.ObtenerEstadoConciliacionId("Cerrada");
@@ -531,6 +532,7 @@ namespace GestionCuentasBancarias.Business.Services
             List<DetalleConciliacionResponseDTO> detalle)
         {
             decimal depositosTransito = 0m;
+            decimal salidasTransito = 0m;
             decimal chequesCirculacion = 0m;
             decimal erroresBancarios = 0m;
             decimal ajustesContables = 0m;
@@ -545,9 +547,16 @@ namespace GestionCuentasBancarias.Business.Services
                     bool esCheque = string.Equals(item.MEM_Descripcion?.Trim(), "Cheque", StringComparison.OrdinalIgnoreCase);
 
                     if (esIngreso)
+                    {
                         depositosTransito += item.MOV_Monto.Value;
-                    else if (esCheque)
-                        chequesCirculacion += item.MOV_Monto.Value;
+                    }
+                    else
+                    {
+                        salidasTransito += item.MOV_Monto.Value;
+
+                        if (esCheque)
+                            chequesCirculacion += item.MOV_Monto.Value;
+                    }
                 }
 
                 if ((estado == "PENDIENTE EN LIBROS" || estado == "AJUSTADO") &&
@@ -575,7 +584,7 @@ namespace GestionCuentasBancarias.Business.Services
             cabecera.SaldoBancoAjustado =
                 cabecera.CON_Saldo_Banco +
                 depositosTransito -
-                chequesCirculacion +
+                salidasTransito +
                 erroresBancarios;
 
             cabecera.SaldoLibrosAjustado =
