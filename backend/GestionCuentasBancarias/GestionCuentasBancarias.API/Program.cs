@@ -114,6 +114,9 @@ builder.Services.AddScoped<IDireccionPersonaService, DireccionPersonaService>();
 builder.Services.AddScoped<IAplicacionInteresRepository, AplicacionInteresRepository>();
 builder.Services.AddScoped<IAplicacionInteresService, AplicacionInteresService>();
 
+builder.Services.AddScoped<IConciliacionRepository, ConciliacionRepository>();
+builder.Services.AddScoped<IConciliacionService, ConciliacionService>();
+
 
 var app = builder.Build();
 
