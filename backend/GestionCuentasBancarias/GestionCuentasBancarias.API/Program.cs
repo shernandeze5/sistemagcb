@@ -117,6 +117,9 @@ builder.Services.AddScoped<IAplicacionInteresService, AplicacionInteresService>(
 builder.Services.AddScoped<IConciliacionRepository, ConciliacionRepository>();
 builder.Services.AddScoped<IConciliacionService, ConciliacionService>();
 
+builder.Services.AddScoped<IReporteCuentaBancariaRepository, ReporteCuentaBancariaRepository>();
+builder.Services.AddScoped<IReporteCuentaBancariaService, ReporteCuentaBancariaService>();
+
 
 var app = builder.Build();
 
