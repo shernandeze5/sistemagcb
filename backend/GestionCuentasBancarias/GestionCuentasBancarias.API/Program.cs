@@ -123,6 +123,9 @@ builder.Services.AddScoped<IReporteCuentaBancariaService, ReporteCuentaBancariaS
 builder.Services.AddScoped<IReporteConciliacionRepository, ReporteConciliacionRepository>();
 builder.Services.AddScoped<IReporteConciliacionService, ReporteConciliacionService>();
 
+builder.Services.AddScoped<IReporteMovimientoService, ReporteMovimientoService>();
+builder.Services.AddScoped<IReporteMovimientoRepository, ReporteMovimientoRepository>();
+
 
 
 var app = builder.Build();
