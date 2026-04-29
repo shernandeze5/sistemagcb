@@ -126,6 +126,8 @@ builder.Services.AddScoped<IReporteConciliacionService, ReporteConciliacionServi
 builder.Services.AddScoped<IReporteMovimientoService, ReporteMovimientoService>();
 builder.Services.AddScoped<IReporteMovimientoRepository, ReporteMovimientoRepository>();
 
+builder.Services.AddScoped<IReporteChequeService, ReporteChequeService>();
+builder.Services.AddScoped<IReporteChequeRepository, ReporteChequeRepository>();
 
 
 var app = builder.Build();
