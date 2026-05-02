@@ -69,7 +69,7 @@ namespace GestionCuentasBancarias.Data.Repositories
                         EM.ESM_Descripcion AS EstadoMovimiento,
 
                         M.MOV_Monto_Origen,
-                        NVL(M.MOV_Recargo, 0) AS MOV_Recargo,
+                        0 AS MOV_Recargo,
                         M.MOV_Monto,
                         M.MOV_Saldo,
                         M.MOV_Fecha,
