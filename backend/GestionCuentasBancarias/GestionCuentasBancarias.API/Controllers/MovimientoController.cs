@@ -1,11 +1,13 @@
 ﻿using GestionCuentasBancarias.Domain.DTOS;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionCuentasBancarias.API.Controllers
 {
     [ApiController]
     [Route("api/movimiento")]
+    [Authorize(Roles = "Administrador,Auxiliar,Contador")]
     public class MovimientoController : ControllerBase
     {
         private readonly IMovimientoService service;

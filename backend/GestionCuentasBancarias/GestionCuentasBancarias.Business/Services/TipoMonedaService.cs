@@ -1,11 +1,6 @@
-﻿using GestionCuentasBancarias.Domain.Interfaces.Services;
+﻿using GestionCuentasBancarias.Domain.DTOS.TipoMoneda;
 using GestionCuentasBancarias.Domain.Interfaces.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GestionCuentasBancarias.Domain.DTOS.TipoMoneda;
+using GestionCuentasBancarias.Domain.Interfaces.Services;
 
 namespace GestionCuentasBancarias.Business.Services
 {
@@ -23,7 +18,7 @@ namespace GestionCuentasBancarias.Business.Services
             return repository.ObtenerTiposMoneda();
         }
 
-        public Task<ResponseTipoMonedaDTO> ObtenerTipoMonedaPorId(int id)
+        public Task<ResponseTipoMonedaDTO?> ObtenerTipoMonedaPorId(int id)
         {
             return repository.ObtenerTipoMonedaPorId(id);
         }

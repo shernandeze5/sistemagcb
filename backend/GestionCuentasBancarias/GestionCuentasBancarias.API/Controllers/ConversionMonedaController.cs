@@ -1,11 +1,13 @@
 ﻿using GestionCuentasBancarias.Domain.DTOS.ConversionMoneda;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionCuentasBancarias.API.Controllers
 {
     [ApiController]
     [Route("api/conversiones-moneda")]
+    [Authorize]
     public class ConversionMonedaController : ControllerBase
     {
         private readonly IConversionMonedaService service; 

@@ -12,6 +12,17 @@ namespace GestionCuentasBancarias.Domain.DTOS.ReporteMovimiento
         public int CUB_Cuenta { get; set; }
         public string CUB_Numero_Cuenta { get; set; } = string.Empty;
 
+        public string BAN_Nombre { get; set; } = string.Empty;
+
+        public string? CUB_Primer_Nombre { get; set; }
+        public string? CUB_Segundo_Nombre { get; set; }
+        public string? CUB_Primer_Apellido { get; set; }
+        public string? CUB_Segundo_Apellido { get; set; }
+
+        public string TCU_Descripcion { get; set; } = string.Empty;
+        public string TMO_Descripcion { get; set; } = string.Empty;
+        public string TMO_Simbolo { get; set; } = string.Empty;
+
         public int? PER_Persona { get; set; }
         public string Persona { get; set; } = string.Empty;
 

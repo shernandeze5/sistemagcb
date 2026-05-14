@@ -1,12 +1,14 @@
 ﻿using GestionCuentasBancarias.Business.Services;
 using GestionCuentasBancarias.Domain.DTOS.AplicacionInteres;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionCuentasBancarias.API.Controllers
 {
     [ApiController]
     [Route("api/aplicacion-intereses")]
+    [Authorize]
     public class AplicacionInteresController : ControllerBase
     {
         private readonly IAplicacionInteresService service;

@@ -1,5 +1,6 @@
 ﻿using GestionCuentasBancarias.Domain.DTOS.InteresFrecuencia;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionCuentasBancarias.API.Controllers
@@ -16,6 +17,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> ObtenerFrecuencias()
         {
             var frecuencias = await service.ObtenerFrecuencias();
@@ -23,6 +25,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
         public async Task<IActionResult> ObtenerFrecuencia(int id)
         {
             var frecuencia = await service.ObtenerFrecuenciaPorId(id);
@@ -31,6 +34,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
         public async Task<IActionResult> CrearFrecuencia([FromBody] CreateInteresFrecuenciaDTO dto)
         {
             try
@@ -45,6 +49,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
         public async Task<IActionResult> ActualizarFrecuencia(int id, [FromBody] UpdateInteresFrecuenciaDTO dto)
         {
             try
@@ -60,6 +65,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
         public async Task<IActionResult> EliminarFrecuencia(int id)
         {
             var deleted = await service.EliminarFrecuencia(id);
@@ -68,6 +74,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPatch("{id}/reactivar")]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
         public async Task<IActionResult> ReactivarFrecuencia(int id)
         {
             var reactivado = await service.ReactivarFrecuencia(id);

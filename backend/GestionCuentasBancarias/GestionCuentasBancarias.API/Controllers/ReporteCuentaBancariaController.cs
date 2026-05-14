@@ -1,10 +1,12 @@
 ﻿using GestionCuentasBancarias.Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionCuentasBancarias.API.Controllers
 {
     [ApiController]
     [Route("api/reportes/cuentas-bancarias")]
+    [Authorize(Roles = "Administrador,Contador,Auxiliar")]
     public class ReporteCuentaBancariaController : ControllerBase
     {
         private readonly IReporteCuentaBancariaService service;

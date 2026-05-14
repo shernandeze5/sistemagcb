@@ -1,12 +1,13 @@
 ﻿using GestionCuentasBancarias.Business.Services;
 using GestionCuentasBancarias.Domain.DTOS;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionCuentasBancarias.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/tipo-movimiento")]
     public class TipoMovimientoController : ControllerBase
     {
         private readonly ITipoMovimientoService _service;
@@ -17,6 +18,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> ObtenerTodos()
         {
             var data = await _service.ObtenerTodosAsync();
@@ -24,6 +26,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ObtenerPorId(int id)
         {
             var data = await _service.ObtenerPorIdAsync(id);
@@ -35,6 +38,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Crear([FromBody] CrearTipoMovimientoDTO dto)
         {
             if (string.IsNullOrWhiteSpace(dto.TIM_Descripcion))
@@ -49,6 +53,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Actualizar(int id, [FromBody] ActualizarTipoMovimientoDTO dto)
         {
             if (string.IsNullOrWhiteSpace(dto.TIM_Descripcion))
@@ -63,6 +68,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> EliminarLogico(int id)
         {
             var resultado = await _service.EliminarLogicoAsync(id);
@@ -74,6 +80,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPatch("{id}/reactivar")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Reactivar(int id)
         {
             var resultado = await _service.Reactivar(id);

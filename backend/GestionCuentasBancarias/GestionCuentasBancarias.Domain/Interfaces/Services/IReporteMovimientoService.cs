@@ -9,12 +9,13 @@ namespace GestionCuentasBancarias.Domain.Interfaces.Services
 {
     public interface IReporteMovimientoService
     {
-        Task<IEnumerable<ReporteMovimientoDTO>> ObtenerReporte(
+        Task<EstadoCuentaMovimientoDTO> ObtenerReporte(
             int? cuentaId,
             int? tipoMovimientoId,
             int? medioMovimientoId,
             int? estadoMovimientoId,
-            int? personaId
-        );
+            int? personaId,
+            DateTime? fechaInicio,
+            DateTime? fechaFin);
     }
 }

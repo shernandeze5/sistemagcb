@@ -1,5 +1,6 @@
 ﻿using GestionCuentasBancarias.Domain.DTOS.TipoCuenta;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionCuentasBancarias.API.Controllers
@@ -16,6 +17,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> ObtenerTiposCuenta()
         {
             var tipos = await service.ObtenerTiposCuenta();
@@ -23,6 +25,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ObtenerTipoCuenta(int id)
         {
             var tipo = await service.ObtenerTipoCuentaPorId(id);
@@ -31,6 +34,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> CrearTipoCuenta([FromBody] CreateTipoCuentaDTO dto)
         {
             try
@@ -45,6 +49,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ActualizarTipoCuenta(int id, [FromBody] UpdateTipoCuentaDTO dto)
         {
             try
@@ -59,6 +64,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> EliminarTipoCuenta(int id)
         {
             var deleted = await service.EliminarTipoCuenta(id);
@@ -67,6 +73,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPatch("{id}/reactivar")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ReactivarTipoCuenta(int id)
         {
             var reactivado = await service.ReactivarTipoCuenta(id);

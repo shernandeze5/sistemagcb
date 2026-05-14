@@ -18,19 +18,23 @@ namespace GestionCuentasBancarias.Business.Services
             this.repository = repository;
         }
 
-        public async Task<IEnumerable<ReporteMovimientoDTO>> ObtenerReporte(
-            int? cuentaId,
-            int? tipoMovimientoId,
-            int? medioMovimientoId,
-            int? estadoMovimientoId,
-            int? personaId)
+        public async Task<EstadoCuentaMovimientoDTO> ObtenerReporte(
+           int? cuentaId,
+           int? tipoMovimientoId,
+           int? medioMovimientoId,
+           int? estadoMovimientoId,
+           int? personaId,
+           DateTime? fechaInicio,
+           DateTime? fechaFin)
         {
             return await repository.ObtenerReporte(
                 cuentaId,
                 tipoMovimientoId,
                 medioMovimientoId,
                 estadoMovimientoId,
-                personaId
+                personaId,
+                fechaInicio,
+                fechaFin
             );
         }
     }

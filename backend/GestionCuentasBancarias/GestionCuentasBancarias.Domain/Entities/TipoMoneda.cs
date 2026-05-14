@@ -10,6 +10,8 @@ namespace GestionCuentasBancarias.Domain.Entities
     {
         public int TMO_Tipo_Moneda { get; set; }
         public string TMO_Descripcion { get; set; } = string.Empty;
+        public string TMO_Codigo_ISO { get; set; } = string.Empty;
+        public string TMO_Simbolo { get; set; } = string.Empty;
         public string TMO_Estado { get; set; } = string.Empty;
         public DateTime TMO_Fecha_Creacion { get; set; }
     }

@@ -4,8 +4,51 @@ using GestionCuentasBancarias.Data.Repositories;
 using GestionCuentasBancarias.Domain.Interfaces.Repositories;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+
+using System.Text;
+
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
+builder.Services.AddHttpClient();
+builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "GestionCuentasBancarias.API",
+        Version = "v1"
+    });
+
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Ingrese el token JWT. Ejemplo: Bearer eyJhbGciOiJIUzI1NiIs..."
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 
 builder.Services.AddCors(options =>
 {
@@ -17,27 +60,49 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Add services to the container.
-
-builder.Services.AddControllers();
-builder.Services.AddHttpClient();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddCors(options => {
-    options.AddPolicy("AllowReactApp",
-        builder => builder.WithOrigins("http://localhost:5173") // URL de Vite
-                          .AllowAnyMethod()
-                          .AllowAnyHeader());
-});
-builder.Services.AddSwaggerGen();   
 builder.Services.AddScoped<OracleConnectionFactory>(sp =>
 {
     var configuration = sp.GetRequiredService<IConfiguration>();
+
     var connectionString = configuration.GetConnectionString("OracleConnection")
-    ?? throw new InvalidOperationException("No se encontr� la cadena de conexi�n OracleConnection.");
+        ?? throw new InvalidOperationException("No se encontró la cadena de conexión OracleConnection.");
 
     return new OracleConnectionFactory(connectionString);
 });
+
+var jwtKey = builder.Configuration["Jwt:Key"]
+    ?? throw new InvalidOperationException("No se encontró Jwt:Key en appsettings.json.");
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwtKey)
+        ),
+
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<IMovimientoRepository, MovimientoRepository>();
 builder.Services.AddScoped<IMovimientoService, MovimientoService>();
@@ -52,7 +117,7 @@ builder.Services.AddScoped<ITipoCuentaRepository, TipoCuentaRespository>();
 builder.Services.AddScoped<ITipoCuentaService, TipoCuentaService>();
 
 builder.Services.AddScoped<ITipoPersonaRepository, TipoPersonaRepository>();
-builder.Services.AddScoped<ITipoPersonaService, TipoPersonaService >();
+builder.Services.AddScoped<ITipoPersonaService, TipoPersonaService>();
 
 builder.Services.AddScoped<ITipoTelefonoRepository, TipoTelefonoRepository>();
 builder.Services.AddScoped<ITipoTelefonoService, TipoTelefonoService>();
@@ -123,17 +188,22 @@ builder.Services.AddScoped<IReporteCuentaBancariaService, ReporteCuentaBancariaS
 builder.Services.AddScoped<IReporteConciliacionRepository, ReporteConciliacionRepository>();
 builder.Services.AddScoped<IReporteConciliacionService, ReporteConciliacionService>();
 
-builder.Services.AddScoped<IReporteMovimientoService, ReporteMovimientoService>();
 builder.Services.AddScoped<IReporteMovimientoRepository, ReporteMovimientoRepository>();
+builder.Services.AddScoped<IReporteMovimientoService, ReporteMovimientoService>();
 
+builder.Services.AddScoped<IRolRepository, RolRepository>();
+builder.Services.AddScoped<IRolService, RolService>();
 
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 
 app.UseCors("FrontendPolicy");
 
-
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -142,8 +212,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowReactApp");
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
