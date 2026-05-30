@@ -493,6 +493,32 @@ namespace GestionCuentasBancarias.Data.Repositories
             return await connection.ExecuteScalarAsync<int>(sql, new { Id = estadoId }) > 0;
         }
 
+        public async Task<bool> ExistePeriodoConciliado(int cuentaId, DateTime fecha)
+        {
+            using var connection = GetConnection();
+
+            string periodo = fecha.ToString("yyyy-MM");
+
+            string sql = @"
+                SELECT COUNT(*)
+                FROM GCB_CONCILIACION c
+                INNER JOIN GCB_ESTADO_CONCILIACION e
+                    ON e.ECO_ESTADO_CONCILIACION = c.ECO_ESTADO_CONCILIACION
+                WHERE c.CUB_CUENTA = :CuentaId
+                  AND TRIM(c.CON_PERIODO) = :Periodo
+                  AND UPPER(TRIM(e.ECO_DESCRIPCION)) IN ('CONCILIADA', 'CERRADA')";
+
+            var cantidad = await connection.ExecuteScalarAsync<int>(
+                sql,
+                new
+                {
+                    CuentaId = cuentaId,
+                    Periodo = periodo
+                });
+
+            return cantidad > 0;
+        }
+
         private async Task<int> InsertarMovimiento(
             OracleConnection connection,
             OracleTransaction trx,
