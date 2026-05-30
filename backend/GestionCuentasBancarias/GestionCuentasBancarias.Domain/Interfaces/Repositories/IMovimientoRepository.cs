@@ -23,5 +23,7 @@ namespace GestionCuentasBancarias.Domain.Interfaces.Repositories
         Task<bool> ExisteTipoMovimientoActivo(int tipoId);
         Task<bool> ExisteMedioMovimientoActivo(int medioId);
         Task<bool> ExisteEstadoMovimientoActivo(int estadoId);
+
+        Task<bool> ExistePeriodoConciliado(int cuentaId, DateTime fecha);
     }
 }

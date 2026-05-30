@@ -14,5 +14,6 @@ namespace GestionCuentasBancarias.Domain.Interfaces.Services
         Task<ResponseMovimientoDTO?> ObtenerPorId(int id);
         Task<IEnumerable<ResponseMovimientoDTO>> ObtenerPorCuenta(int cuentaId);
         Task Anular(int id);
+
     }
 }
