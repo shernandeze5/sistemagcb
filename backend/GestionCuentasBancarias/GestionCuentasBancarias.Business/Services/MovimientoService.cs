@@ -17,6 +17,7 @@ namespace GestionCuentasBancarias.Business.Services
         {
             ValidarDto(dto);
             await ValidarCatalogos(dto);
+            await ValidarPeriodoNoConciliado(dto);
 
             return await repository.CrearConRecargo(dto);
         }
@@ -92,6 +93,21 @@ namespace GestionCuentasBancarias.Business.Services
             var estadoExiste = await repository.ExisteEstadoMovimientoActivo(dto.ESM_Estado_Movimiento);
             if (!estadoExiste)
                 throw new Exception("El estado de movimiento no existe o está inactivo.");
+        }
+
+        private async Task ValidarPeriodoNoConciliado(CreateMovimientoDTO dto)
+        {
+            var periodoConciliado = await repository.ExistePeriodoConciliado(
+                dto.CUB_Cuenta,
+                dto.MOV_Fecha
+            );
+
+            if (periodoConciliado)
+            {
+                throw new Exception(
+                    $"No se pueden registrar movimientos en {dto.MOV_Fecha:MM/yyyy} porque ese período ya fue conciliado."
+                );
+            }
         }
     }
 }

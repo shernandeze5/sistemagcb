@@ -1,5 +1,6 @@
 ﻿using GestionCuentasBancarias.Domain.DTOS.TipoDireccion;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionCuentasBancarias.API.Controllers
@@ -16,6 +17,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> ObtenerTodos()
         {
             var data = await _service.ObtenerTodosAsync();
@@ -23,6 +25,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Crear([FromBody] CrearTipoDireccionDTO dto)
         {
             var result = await _service.CrearAsync(dto);
@@ -34,6 +37,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Actualizar(int id, [FromBody] ActualizarTipoDireccionDTO dto)
         {
             var result = await _service.ActualizarAsync(id, dto);
@@ -45,6 +49,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Eliminar(int id)
         {
             var result = await _service.EliminarAsync(id);

@@ -1,5 +1,6 @@
 ﻿using GestionCuentasBancarias.Domain.DTOS.CuentaBancaria;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionCuentasBancarias.API.Controllers
@@ -16,14 +17,15 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> ObtenerCuentas()
         {
             var cuentas = await service.ObtenerCuentas();
             return Ok(cuentas);
         }
 
-        // GET api/cuentas-bancarias/banco/1
         [HttpGet("banco/{bancoId}")]
+        [Authorize(Roles = "Administrador,Contador")]
         public async Task<IActionResult> ObtenerCuentasPorBanco(int bancoId)
         {
             var cuentas = await service.ObtenerCuentasPorBanco(bancoId);
@@ -31,6 +33,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Administrador,Contador")]
         public async Task<IActionResult> ObtenerCuenta(int id)
         {
             var cuenta = await service.ObtenerCuentaPorId(id);
@@ -39,6 +42,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador,Contador")]
         public async Task<IActionResult> CrearCuenta([FromBody] CreateCuentaBancariaDTO dto)
         {
             try
@@ -53,6 +57,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador,Contador")]
         public async Task<IActionResult> ActualizarCuenta(int id, [FromBody] UpdateCuentaBancariaDTO dto)
         {
             try
@@ -69,6 +74,7 @@ namespace GestionCuentasBancarias.API.Controllers
 
         // Baja lógica → CUB_Estado = 'I'
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador,Contador")]
         public async Task<IActionResult> EliminarCuenta(int id)
         {
             var deleted = await service.EliminarCuenta(id);
@@ -78,6 +84,7 @@ namespace GestionCuentasBancarias.API.Controllers
 
         // Reactivación → CUB_Estado = 'A'
         [HttpPatch("{id}/reactivar")]
+        [Authorize(Roles = "Administrador,Contador")]
         public async Task<IActionResult> ReactivarCuenta(int id)
         {
             var reactivado = await service.ReactivarCuenta(id);

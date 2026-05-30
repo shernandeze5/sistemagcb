@@ -1,5 +1,6 @@
 using GestionCuentasBancarias.Domain.DTOS.Conciliacion;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionCuentasBancarias.API.Controllers
@@ -16,6 +17,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> ObtenerEstadosConciliacion()
         {
             var estados = await service.ObtenerEstadosConciliacion();
@@ -23,6 +25,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ObtenerEstadoConciliacion(int id)
         {
             var estado = await service.ObtenerEstadoConciliacionPorId(id);
@@ -34,6 +37,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> CrearEstadoConciliacion([FromBody] CreateEstadoConciliacionDTO dto)
         {
             await service.CrearEstadoConciliacion(dto);
@@ -41,6 +45,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ActualizarEstadoConciliacion(int id, [FromBody] UpdateEstadoConciliacionDTO dto)
         {
             await service.ActualizarEstadoConciliacion(id, dto);
@@ -48,6 +53,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> EliminarEstadoConcliacion(int id)
         {
             await service.EliminarEstadoConciliacion(id);
@@ -55,6 +61,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPatch("{id}/reactivar")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ReactivarEstadoConciliacion(int id)
         {
             var reactivado = await service.ReactivarEstadoConciliacion(id);

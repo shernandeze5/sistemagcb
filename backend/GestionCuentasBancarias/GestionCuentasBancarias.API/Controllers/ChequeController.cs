@@ -1,5 +1,6 @@
 ﻿using GestionCuentasBancarias.Domain.DTOS.Cheque;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionCuentasBancarias.API.Controllers
@@ -16,6 +17,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> ObtenerCheques()
         {
             var cheques = await service.ObtenerCheques();
@@ -23,6 +25,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Administrador,Contador,Auxiliar")]
         public async Task<IActionResult> ObtenerCheque(int id)
         {
             var cheque = await service.ObtenerChequePorId(id);
@@ -31,6 +34,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet("cuenta/{cuentaId}")]
+        [Authorize(Roles = "Administrador,Contador,Auxiliar")]
         public async Task<IActionResult> ObtenerChequesPorCuenta(int cuentaId)
         {
             var cheques = await service.ObtenerChequesPorCuenta(cuentaId);
@@ -38,6 +42,8 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador,Contador,Auxiliar")]
+
         public async Task<IActionResult> CrearCheque([FromBody] CreateChequeDTO dto)
         {
             try
@@ -52,6 +58,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPatch("{id}/estado")]
+        [Authorize(Roles = "Administrador,Contador,Auxiliar")]
         public async Task<IActionResult> CambiarEstadoCheque(int id, [FromBody] UpdateDTOCheque dto)
         {
             try

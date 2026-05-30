@@ -1,5 +1,6 @@
 ﻿using GestionCuentasBancarias.Domain.DTOS.Persona;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionCuentasBancarias.API.Controllers
@@ -23,6 +24,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
         public async Task<IActionResult> ObtenerPersona(int id)
         {
             var persona = await service.ObtenerPorIdAsync(id);
@@ -31,6 +33,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet("{id}/detalle")]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
         public async Task<IActionResult> ObtenerPersonaDetalle(int id)
         {
             var persona = await service.ObtenerDetallePorIdAsync(id);
@@ -39,6 +42,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
         public async Task<IActionResult> CrearPersona([FromBody] CreatePersonaDTO dto)
         {
             try
@@ -57,6 +61,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
         public async Task<IActionResult> ActualizarPersona(int id, [FromBody] UpdatePersonaDTO dto)
         {
             try
@@ -72,6 +77,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
         public async Task<IActionResult> EliminarPersona(int id)
         {
             try
@@ -87,6 +93,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPost("{id}/telefonos")]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
         public async Task<IActionResult> AgregarTelefono(int id, [FromBody] CreateTelefonoPersonaExistenteDTO dto)
         {
             try
@@ -103,6 +110,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPost("{id}/direcciones")]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
         public async Task<IActionResult> AgregarDireccion(int id, [FromBody] CreateDireccionPersonaExistenteDTO dto)
         {
             try
@@ -119,6 +127,8 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPut("telefonos/{telefonoId}")]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
+
         public async Task<IActionResult> ActualizarTelefono(int telefonoId, [FromBody] UpdateTelefonoPersonaDTO dto)
         {
             try
@@ -135,6 +145,8 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpDelete("telefonos/{telefonoId}")]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
+
         public async Task<IActionResult> EliminarTelefono(int telefonoId)
         {
             try
@@ -151,6 +163,8 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPut("direcciones/{direccionId}")]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
+
         public async Task<IActionResult> ActualizarDireccion(int direccionId, [FromBody] UpdateDireccionPersonaDTO dto)
         {
             try
@@ -167,6 +181,8 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpDelete("direcciones/{direccionId}")]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
+
         public async Task<IActionResult> EliminarDireccion(int direccionId)
         {
             try

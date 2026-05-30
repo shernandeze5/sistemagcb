@@ -1,5 +1,6 @@
 using GestionCuentasBancarias.Domain.DTOS.Cheque;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionCuentasBancarias.API.Controllers
@@ -16,6 +17,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> ObtenerEstadosCheque()
         {
             var estados = await service.ObtenerEstadosCheque();
@@ -23,6 +25,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ObtenerEstadoCheque(int id)
         {
             var estado = await service.ObtenerEstadoChequePorId(id);
@@ -31,6 +34,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> CrearEstadoCheque([FromBody] CreateEstadoChequeDTO dto)
         {
             try
@@ -45,6 +49,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ActualizarEstadoCheque(int id, [FromBody] UpdateChequeDTO dto)
         {
             try
@@ -59,6 +64,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> EliminarEstadoCheque(int id)
         {
             var deleted = await service.EliminarEstadoCheque(id);
@@ -67,6 +73,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPatch("{id}/reactivar")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ReactivarEstadoCheque(int id)
         {
             var reactivado = await service.ReactivarEstadoCheque(id);

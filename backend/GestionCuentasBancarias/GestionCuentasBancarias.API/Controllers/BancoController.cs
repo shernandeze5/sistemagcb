@@ -1,5 +1,6 @@
 ﻿using GestionCuentasBancarias.Domain.DTOS.Banco;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionCuentasBancarias.API.Controllers
@@ -16,6 +17,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> ObtenerBancos()
         {
             var bancos = await service.ObtenerBancos();
@@ -23,6 +25,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Administrador,Contador,Auxiliar")]
         public async Task<IActionResult> ObtenerBanco(int id)
         {
             var banco = await service.ObtenerBancoPorId(id);
@@ -31,6 +34,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador,Contador,Auxiliar")]
         public async Task<IActionResult> CrearBanco([FromBody] CreateBancoDTO dto)
         {
             try
@@ -45,6 +49,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador,Contador,Auxiliar")]
         public async Task<IActionResult> ActualizarBanco(int id, [FromBody] UpdataBancoDTO dto)
         {
             try
@@ -61,6 +66,7 @@ namespace GestionCuentasBancarias.API.Controllers
 
         // Baja lógica → BAN_Estado = 'I'
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador,Contador,Auxiliar")]
         public async Task<IActionResult> EliminarBanco(int id)
         {
             var deleted = await service.EliminarBanco(id);
@@ -70,6 +76,7 @@ namespace GestionCuentasBancarias.API.Controllers
 
         // Reactivación → BAN_Estado = 'A'
         [HttpPatch("{id}/reactivar")]
+        [Authorize(Roles = "Administrador,Contador,Auxiliar")]
         public async Task<IActionResult> ReactivarBanco(int id)
         {
             var reactivado = await service.ReactivarBanco(id);

@@ -1,5 +1,6 @@
 ﻿using GestionCuentasBancarias.Domain.DTOS.TipoTelefono;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionCuentasBancarias.API.Controllers
@@ -16,6 +17,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Get()
         {
             var data = await _service.ObtenerTodosAsync();
@@ -23,20 +25,23 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Crear(CrearTipoTelefonoDTO dto)
+        [Authorize(Roles = "Administrador")]
+        public async Task<IActionResult> Crear([FromBody] CrearTipoTelefonoDTO dto)
         {
             var result = await _service.CrearAsync(dto);
             return Ok(result);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Actualizar(int id, ActualizarTipoTelefonoDTO dto)
+        [Authorize(Roles = "Administrador")]
+        public async Task<IActionResult> Actualizar(int id, [FromBody] ActualizarTipoTelefonoDTO dto)
         {
             var result = await _service.ActualizarAsync(id, dto);
             return Ok(result);
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Eliminar(int id)
         {
             var result = await _service.EliminarAsync(id);

@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using GestionCuentasBancarias.Data.Context;
+using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ConexionBaseDatosController : ControllerBase
 {
     private readonly OracleConnectionFactory _connectionFactory;

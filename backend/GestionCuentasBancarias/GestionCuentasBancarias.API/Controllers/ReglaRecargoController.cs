@@ -1,5 +1,6 @@
 ﻿using GestionCuentasBancarias.Domain.DTOS.ReglaRecargo;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionCuentasBancarias.API.Controllers
@@ -16,6 +17,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
         public async Task<IActionResult> Crear(CreateReglaRecargoDTO dto)
         {
             var id = await service.Crear(dto);
@@ -23,6 +25,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet("cuenta/{id}")]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
         public async Task<IActionResult> Obtener(int id)
         {
             var data = await service.ObtenerPorCuenta(id);
@@ -30,6 +33,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
         public async Task<IActionResult> Actualizar(int id, UpdateReglaRecargoDTO dto)
         {
             await service.Actualizar(id, dto);
@@ -37,6 +41,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
         public async Task<IActionResult> Eliminar(int id)
         {
             await service.Eliminar(id);

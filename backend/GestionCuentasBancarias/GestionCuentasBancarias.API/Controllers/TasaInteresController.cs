@@ -1,5 +1,6 @@
 ﻿using GestionCuentasBancarias.Domain.DTOS.TasaInteres;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionCuentasBancarias.API.Controllers
@@ -16,6 +17,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> ObtenerTasas()
         {
             var tasas = await service.ObtenerTasas();
@@ -23,6 +25,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
         public async Task<IActionResult> ObtenerTasa(int id)
         {
             var tasa = await service.ObtenerTasaPorId(id);
@@ -31,6 +34,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
         public async Task<IActionResult> CrearTasa([FromBody] CreateTasaInteresDTO dto)
         {
             try
@@ -45,6 +49,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
         public async Task<IActionResult> ActualizarTasa(int id, [FromBody] UpdateTasaInteresDTO dto)
         {
             try
@@ -60,6 +65,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
         public async Task<IActionResult> EliminarTasa(int id)
         {
             var deleted = await service.EliminarTasa(id);
@@ -68,6 +74,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPatch("{id}/reactivar")]
+        [Authorize(Roles = "Administrador,Auxiliar,Contador")]
         public async Task<IActionResult> ReactivarTasa(int id)
         {
             var reactivado = await service.ReactivarTasa(id);

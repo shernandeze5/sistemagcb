@@ -1,5 +1,6 @@
 ﻿using GestionCuentasBancarias.Domain.DTOS.Persona;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionCuentasBancarias.API.Controllers
@@ -16,6 +17,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet("persona/{personaId}")]
+        [Authorize]
         public async Task<IActionResult> ObtenerDireccionesPorPersona(int personaId)
         {
             try
@@ -30,6 +32,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Administrador,Contador,Auxiliar")]
         public async Task<IActionResult> ObtenerDireccion(int id)
         {
             try
@@ -45,6 +48,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador,Contador,Auxiliar")]
         public async Task<IActionResult> CrearDireccion([FromBody] CreateDireccionPersonaDTO dto)
         {
             try
@@ -59,6 +63,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador,Contador,Auxiliar")]
         public async Task<IActionResult> ActualizarDireccion(int id, [FromBody] UpdateDireccionPersonaDTO dto)
         {
             try
@@ -74,6 +79,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador,Contador,Auxiliar")]
         public async Task<IActionResult> EliminarDireccion(int id)
         {
             try

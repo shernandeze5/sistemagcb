@@ -1,11 +1,13 @@
 ﻿using GestionCuentasBancarias.Domain.DTOS.ConciliacionBancaria;
 using GestionCuentasBancarias.Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionCuentasBancarias.API.Controllers
 {
     [ApiController]
     [Route("api/conciliacion")]
+
     public class ConciliacionController : ControllerBase
     {
         private readonly IConciliacionService service;
@@ -16,6 +18,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> ObtenerConciliaciones()
         {
             var data = await service.ObtenerTodas();
@@ -24,6 +27,7 @@ namespace GestionCuentasBancarias.API.Controllers
 
         [HttpPost("procesar")]
         [Consumes("multipart/form-data")]
+        [Authorize(Roles = "Administrador,Contador")]
         public async Task<IActionResult> Procesar([FromForm] ProcesarConciliacionDTO dto)
         {
             try
@@ -46,6 +50,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Administrador,Contador")]
         public async Task<IActionResult> ObtenerConciliacion(int id)
         {
             try
@@ -62,6 +67,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet("{id}/detalle")]
+        [Authorize(Roles = "Administrador,Contador")]
         public async Task<IActionResult> ObtenerDetalle(int id)
         {
             try
@@ -76,6 +82,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpGet("cuenta/{id}")]
+        [Authorize(Roles = "Administrador,Contador")]
         public async Task<IActionResult> ObtenerPorCuenta(int id)
         {
             try
@@ -90,6 +97,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPost("detalle/{id}/registrar-en-libros")]
+        [Authorize(Roles = "Administrador,Contador")]
         public async Task<IActionResult> RegistrarEnLibros(int id)
         {
             try
@@ -104,6 +112,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPatch("detalle/{id}/marcar-transito")]
+        [Authorize(Roles = "Administrador,Contador")]
         public async Task<IActionResult> MarcarEnTransito(int id)
         {
             try
@@ -118,6 +127,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPatch("detalle/{id}/aceptar-manual")]
+        [Authorize(Roles = "Administrador,Contador")]
         public async Task<IActionResult> AceptarManual(int id)
         {
             try
@@ -132,6 +142,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPatch("{id}/recalcular-estado")]
+        [Authorize(Roles = "Administrador,Contador")]
         public async Task<IActionResult> RecalcularEstado(int id)
         {
             try
@@ -146,6 +157,7 @@ namespace GestionCuentasBancarias.API.Controllers
         }
 
         [HttpPatch("{id}/cerrar")]
+        [Authorize(Roles = "Administrador,Contador")]
         public async Task<IActionResult> Cerrar(int id)
         {
             try
